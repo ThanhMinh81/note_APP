@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Mục menu sử dụng actionLayout -->
+
+    <item
+        android:id="@+id/undo_menu"
+        android:title="UNDO"
+        app:showAsAction="always"/>
+
+
+</menu>

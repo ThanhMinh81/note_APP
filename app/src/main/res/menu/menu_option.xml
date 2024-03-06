@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_select"
+            android:title="Select all notes" />
+        <item
+            android:id="@+id/nav_import"
+            android:title="Import text files" />
+        <item
+            android:id="@+id/nav_export"
+            android:title="Export notes to text files" />
+    </group>
+</menu>

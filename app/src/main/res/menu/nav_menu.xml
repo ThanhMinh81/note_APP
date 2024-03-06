@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn = "navigation_view">
+
+    <group android:id="@+id/note"   android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/fragmentHome"
+            android:icon="@drawable/icons8note48"
+            android:title="Notes"/>
+
+
+    </group>
+
+
+
+     <group android:id="@+id/categroy"    android:checkableBehavior="single">
+         <item
+             android:title="Category">
+
+             <menu>
+                 <group  android:checkableBehavior="single" >
+                     <item
+                         android:id="@+id/nav_category"
+                         android:icon="@drawable/icons8category48"
+                         android:title="category"/>
+                     <item
+                         android:id="@+id/nav_about"
+                         android:icon="@drawable/icons8category48"
+                         android:title="About"/>
+                     <item
+                         android:id="@+id/nav_editCategory"
+                         android:icon="@drawable/icons8edit48"
+                         android:title="Edit category"/>
+                 </group>
+             </menu>
+
+         </item>
+     </group>
+
+    <group android:id="@+id/backup"    android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_backup"
+            android:icon="@drawable/icons8save48"
+            android:title="Backup"/>
+        <item
+            android:id="@+id/nav_Trash"
+            android:icon="@drawable/icons8delete48"
+            android:title="Trash"/>
+
+
+    </group>
+
+
+    <group android:id="@+id/setting"    android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_setting"
+            android:icon="@drawable/icons8setting48"
+            android:title="Settings"/>
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/icons8delete48"
+            android:title="Help"/>
+
+        <item
+            android:id="@+id/nav_policy"
+            android:icon="@drawable/icons8delete48"
+            android:title="Privacy policy"/>
+
+
+    </group>
+
+
+
+
+
+</menu>

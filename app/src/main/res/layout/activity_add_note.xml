@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.AddNoteActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarAdd"
+        android:background="@color/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="20sp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/backAddNote"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/baseline_arrow_back_24" />
+
+            <TextView
+                android:textStyle="bold"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:text="Notepad Free"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                 android:id="@+id/saveNote"
+                android:textStyle="bold"
+                android:layout_marginLeft="15sp"
+                android:layout_marginRight="15sp"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:text="Save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:text="Undo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+    <EditText
+        android:id="@+id/edTitleNote"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter text..."
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@+id/toolbarAdd" />
+
+    <EditText
+        android:id="@+id/edContentNote"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="top|start"
+        android:hint="Enter text..."
+        android:inputType="textMultiLine"
+        android:lines="10"
+        android:maxLines="20"
+        android:minLines="6"
+        android:scrollbars="vertical"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@+id/edTitleNote" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
