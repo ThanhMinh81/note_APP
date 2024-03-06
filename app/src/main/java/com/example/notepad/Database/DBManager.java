@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.notepad.Model.Note;
@@ -140,6 +141,23 @@ public class DBManager {
         cursor.close();
         return count;
     }
+
+
+    public void deleteNode(ArrayList<String> strings)
+    {
+
+        String args = TextUtils.join(", ", strings);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.execSQL(String.format("DELETE FROM note WHERE idNote IN (%s);", args));
+
+    }
+
+
+
+
+
+
+
 
 
 

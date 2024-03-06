@@ -42,25 +42,20 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class HomeFragment extends Fragment {
 
-    private   View view ;
-    private RecyclerView rcvHome ;
-    private ArrayList<Note> notes ;
-    private AdapterNote apdaterNote ;
-    IData iData ;
-    IClickUpdate iClickUpdate ;
-
-    DataViewModel dataViewModel ;
-
-
-
-
+    private View view;
+    private RecyclerView rcvHome;
+    private ArrayList<Note> notes;
+    private AdapterNote apdaterNote;
+    IData iData;
+    IClickUpdate iClickUpdate;
+    DataViewModel dataViewModel;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
 
-        view =inflater.inflate(R.layout.fragment_home, container, false);
+        view = inflater.inflate(R.layout.fragment_home, container, false);
 
 
         iClickUpdate = new IClickUpdate() {
@@ -70,15 +65,19 @@ public class HomeFragment extends Fragment {
 //                Log.d("fasdfas",note.getIdNote() + " ");
                 Intent intent = new Intent(getActivity(), UpdateActivity.class);
 
-                   intent.putExtra("note",note);
-                 startActivityForResult(intent,10);
+                intent.putExtra("note", note);
+
+                startActivityForResult(intent, 10);
 
 
             }
         };
 
+//        home fragment nhan biet dc data change
+
+
         notes = new ArrayList<>();
-        apdaterNote = new AdapterNote(notes,getContext(),iClickUpdate);
+        apdaterNote = new AdapterNote(notes, getContext(), iClickUpdate);
         rcvHome = view.findViewById(R.id.rcvHome);
 
 
@@ -86,23 +85,33 @@ public class HomeFragment extends Fragment {
         rcvHome.setAdapter(apdaterNote);
         apdaterNote.notifyDataSetChanged();
 
+        //
 
         // tra ve node moi
 
         // update node trong viewmodel
 
 
-         dataViewModel = new ViewModelProvider(requireActivity()).get(DataViewModel.class);
+        dataViewModel = new ViewModelProvider(requireActivity()).get(DataViewModel.class);
 
         dataViewModel.getListMutableLiveData().observe(getViewLifecycleOwner(), new Observer<ArrayList<Note>>() {
-             @Override
-             public void onChanged(ArrayList<Note> noteArrayList) {
+            @Override
+            public void onChanged(ArrayList<Note> noteArrayList) {
 
-                 notes.clear();
-                 notes.addAll(noteArrayList);
-                 apdaterNote.notifyDataSetChanged();
-             }
-         });
+                notes.clear();
+                notes.addAll(noteArrayList);
+                apdaterNote.notifyDataSetChanged();
+
+            }
+        });
+
+        dataViewModel.getStringMutableLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                apdaterNote.setFilter(notes, s);
+                Log.d("thaydoidulieu", s.toString());
+            }
+        });
 
 
 
@@ -111,11 +120,10 @@ public class HomeFragment extends Fragment {
     }
 
 
-    public void getData(List<Note> noteArrayList)
-    {
-         noteArrayList.addAll(noteArrayList);
-         Log.d("checkID",noteArrayList.get(0).getIdNote() + " ");
-         apdaterNote.notifyDataSetChanged();
+    public void getData(List<Note> noteArrayList) {
+        noteArrayList.addAll(noteArrayList);
+//        Log.d("checkID", noteArrayList.get(0).getIdNote() + " ");
+        apdaterNote.notifyDataSetChanged();
     }
 
 
@@ -124,13 +132,13 @@ public class HomeFragment extends Fragment {
 
         if (requestCode == 10) {
 
-                if(data != null)
-                {
-                    Note note = data.getParcelableExtra("note");
-                    dataViewModel.updateNote(note);
-                    Log.d("updateDataaa",note.getIdNote() + " ");
+            if (data != null) {
+                Note note = (Note) data.getParcelableExtra("note");
 
-                }
+                dataViewModel.updateNote(note);
+                dataViewModel.setMutableLiveDataNote(note);
+
+            }
 
         }
 

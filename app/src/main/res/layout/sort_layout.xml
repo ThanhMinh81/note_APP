@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_centerInParent="true"
+    android:paddingStart="20dp"
+    android:paddingTop="20dp"
+    android:paddingLeft="20dp"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:text="Sort by"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="20dp"
+            android:gravity="center">
+
+            <RadioButton
+                app:buttonTint="@color/appbar"
+                android:id="@+id/title_newest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:padding="4dp"
+                android:text="edit date : from newest"
+                android:textAlignment="textStart"
+                android:textSize="20sp" />
+
+            <RadioButton
+                app:buttonTint="@color/appbar"
+                android:id="@+id/title_oldest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:padding="4dp"
+                android:text="edit data : from oldest"
+                android:textAlignment="textStart"
+                android:textSize="20sp" />
+
+            <RadioButton
+                app:buttonTint="@color/appbar"
+                android:id="@+id/title_AtoZ"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:padding="4dp"
+                android:text="title : A to Z"
+                android:textAlignment="textStart"
+                android:textSize="20sp" />
+
+            <RadioButton
+                app:buttonTint="@color/appbar"
+                android:id="@+id/title_ZtoA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="textStart"
+                android:checked="false"
+                android:padding="4dp"
+                android:text="title : Z to A"
+                android:textSize="20sp" />
+
+            <RadioButton
+                app:buttonTint="@color/appbar"
+                android:id="@+id/create_newest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:padding="4dp"
+                android:text="creation date : from newest"
+                android:textAlignment="textStart"
+                android:textSize="20sp" />
+
+            <RadioButton
+                app:buttonTint="@color/appbar"
+                android:id="@+id/create_oldest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:padding="4dp"
+                android:text="creation date : from oldest"
+                android:textAlignment="textStart"
+                android:textSize="20sp" />
+
+        </RadioGroup>
+
+        <LinearLayout
+
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:gravity="end"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvCancle"
+                android:layout_marginRight="30sp"
+                android:textStyle="bold"
+                android:textColor="@color/appbar"
+                android:text="CANCLE"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+
+            <TextView
+                android:layout_marginRight="30sp"
+                android:id="@+id/tvSort"
+                android:textStyle="bold"
+                android:textColor="@color/appbar"
+                android:text="SORT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

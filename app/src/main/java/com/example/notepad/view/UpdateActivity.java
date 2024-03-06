@@ -39,17 +39,16 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class UpdateActivity extends AppCompatActivity {
 
-    Toolbar toolbar ;
-    EditText edTitle , edContent ;
+    Toolbar toolbar;
+    EditText edTitle, edContent;
 
-    DBManager databaseHandler ;
+    DBManager databaseHandler;
 
-    Note noteData ;
+    Note noteData;
 
-    int DefaultColor ;
+    int DefaultColor;
 
-    LinearLayout linearLayout ;
-
+    LinearLayout linearLayout;
 
 
     @Override
@@ -77,8 +76,7 @@ public class UpdateActivity extends AppCompatActivity {
         DefaultColor = ContextCompat.getColor(this, R.color.appbar);
 
 
-          noteData = getIntent().getExtras().getParcelable("note");
-
+        noteData = getIntent().getExtras().getParcelable("note");
 
 
         edTitle.setText(noteData.getTitle());
@@ -95,13 +93,11 @@ public class UpdateActivity extends AppCompatActivity {
 
     }
 
-    private void eventClickUpdate()
-    {
-        if(edTitle.getText().toString().length() > 0 && edContent.getText().toString().length() > 0)
-        {
+    private void eventClickUpdate() {
+        if (edTitle.getText().toString().length() > 0 && edContent.getText().toString().length() > 0) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date date = new Date();
-            String time =  dateFormat.format(date) ;
+            String time = dateFormat.format(date);
 
             Note note = new Note();
             note.setIdNote(noteData.getIdNote());
@@ -111,7 +107,7 @@ public class UpdateActivity extends AppCompatActivity {
 
             Intent intent = new Intent();
 
-            intent.putExtra("note",note);
+            intent.putExtra("note", note);
 
 
             setResult(RESULT_OK, intent);
@@ -120,8 +116,7 @@ public class UpdateActivity extends AppCompatActivity {
             finish();
 
 
-
-        }else  {
+        } else {
             Toast.makeText(this, "Vui lòng nhập dữ liệu ", Toast.LENGTH_SHORT).show();
         }
     }
@@ -134,7 +129,7 @@ public class UpdateActivity extends AppCompatActivity {
 
         getMenuInflater().inflate(R.menu.menu_save, menu);
 
-        getMenuInflater().inflate(R.menu.menu_undo,menu);
+        getMenuInflater().inflate(R.menu.menu_undo, menu);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -145,11 +140,9 @@ public class UpdateActivity extends AppCompatActivity {
 
         int id = item.getItemId();
 
-        if(id == R.id.nav_saveUpdate)
-        {
-           eventClickUpdate();
-        }else if(id == R.id.nav_colorize)
-        {
+        if (id == R.id.nav_saveUpdate) {
+            eventClickUpdate();
+        } else if (id == R.id.nav_colorize) {
             OpenColorPickerDialog(false);
         }
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="appbar">#836E4C</color>
+    <color name="colorSelect">#5E4010</color>
     <color name="backgroundItem">#D3C3AB</color>
     <color name="black">#1B1A18</color>
     <color name="white">#FFFFFFFF</color>

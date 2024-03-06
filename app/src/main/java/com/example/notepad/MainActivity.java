@@ -8,8 +8,10 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -19,15 +21,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.notepad.Database.DBManager;
+import com.example.notepad.Interface.IData;
 import com.example.notepad.Model.Note;
 import com.example.notepad.ViewModel.DataViewModel;
 import com.example.notepad.ViewModel.MyViewModelFactory;
 import com.example.notepad.view.AboutFragment;
 import com.example.notepad.view.AddNoteActivity;
 import com.example.notepad.view.HomeFragment;
+import com.example.notepad.view.SelectAllActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
@@ -43,7 +50,9 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
      DataViewModel dataViewModel ;
     ArrayList<Note> noteArrayList ;
 
+    Dialog dialog ;
 
+    IData iData ;
 
 
     @Override
@@ -59,6 +68,8 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         floatingActionButton = findViewById(R.id.fab);
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        dialog = new Dialog(MainActivity.this);
 
         // tham so truyen vao
         databaseHandler = new DBManager(this);
@@ -81,9 +92,17 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
         noteArrayList = new ArrayList<>();
 
+        // backup data note
         noteArrayList.addAll(dataViewModel.getValueArr());
 
-        //viewmodel
+        dataViewModel.getMutableLiveDataNote().observe(this, new Observer<Note>() {
+            @Override
+            public void onChanged(Note note) {
+                Log.d("safdfa",note.getTitle());
+                noteArrayList.add(note);
+            }
+        });
+
 
 
         if (savedInstanceState == null) {
@@ -116,6 +135,12 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
         if(id == R.id.nav_select)
         {
+
+            Intent intent = new Intent(MainActivity.this, SelectAllActivity.class);
+             intent.putParcelableArrayListExtra("listData",noteArrayList);
+
+             startActivity(intent);
+
             Toast.makeText(this, "itemImportText", Toast.LENGTH_SHORT).show();
         }else if( id == R.id.nav_import)
         {
@@ -124,12 +149,13 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         }else if(id == R.id.nav_export) {}
         else if(id == R.id.sort_menu)
         {
-            Toast.makeText(this, "sortMenu", Toast.LENGTH_SHORT).show();
-
+            showDialogSort();
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+
 
 
     @Override
@@ -164,6 +190,8 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
             public boolean onQueryTextChange(String newText) {
 
 
+                dataViewModel.setStringMutableLiveData(newText.toString().trim());
+
                 // list result search
                 ArrayList<Note> noteNewArrayList = new ArrayList<>();
 
@@ -172,6 +200,7 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
                 if(newText.trim().length() > 0)
                 {
                     int count = 0 ;
+                    // check xem co tim ra hay khong
                     Boolean check = false ;
                     for (Note note : noteArrayList)
                     {
@@ -186,16 +215,20 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
                     }
                     if(count == noteArrayList.size() && !check)
                     {
+
+                        // neu khong tim thay set mang ve empty
                         ArrayList<Note> notes = new ArrayList<>();
                         dataViewModel.setListMutableLiveData(notes);
+
                     }
                 }
                 else if(newText.trim().length() == 0 ) {
+
                     Log.d("fasfa",noteArrayList.size() + "");
 
                     dataViewModel.setListMutableLiveData(noteArrayList);
-                }
 
+                }
 
                 // Handle search query text change
                 return false;
@@ -214,7 +247,22 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
-         dataViewModel.getData();
+
+
+        if (requestCode == 10) {
+
+            if(data != null)
+            {
+                dataViewModel.getData();
+                Note note =(Note) data.getParcelableExtra("note");
+
+                // chỗ này chưa lấy được id của node
+
+                dataViewModel.setMutableLiveDataNote(note);
+
+            }
+
+        }
 
 
         super.onActivityResult(requestCode, resultCode, data);
@@ -245,6 +293,60 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         } else {
             super.onBackPressed();
         }
+    }
+
+    private void showDialogSort() {
+
+
+        TextView tvCancle  , tvSort ;
+        RadioGroup radioGroup  = findViewById(R.id.radioGroup) ;
+
+        dialog.setContentView(R.layout.sort_layout);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.setCancelable(false);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.animation;
+
+        tvCancle = dialog.findViewById(R.id.tvCancle);
+        tvSort = dialog.findViewById(R.id.tvSort);
+
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+
+                 if(checkedId == R.id.title_AtoZ)
+                 {
+                     dataViewModel.setOnSelectedSort("TitleAtoZ");
+                 }
+
+
+            }
+        });
+
+        tvSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                dialog.dismiss();
+
+
+            }
+        });
+
+        tvCancle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                dialog.dismiss();
+
+                Toast.makeText(MainActivity.this, "Cancel clicked", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        dialog.show();
+
     }
 
 

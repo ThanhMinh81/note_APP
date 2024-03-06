@@ -1,5 +1,6 @@
 package com.example.notepad.view;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,15 +26,13 @@ import java.util.Date;
 
 public class AddNoteActivity extends AppCompatActivity {
 
-    Toolbar toolbar ;
-    EditText edTitle , edContent ;
-    TextView tvSave ;
-    DBManager databaseHandler ;
-    ImageView back ;
+    Toolbar toolbar;
+    EditText edTitle, edContent;
+    TextView tvSave;
+    DBManager databaseHandler;
+    ImageView back;
 
-    Boolean checkUpdateNote = true ;
-
-
+    Boolean checkUpdateNote = true;
 
 
     @Override
@@ -49,39 +48,45 @@ public class AddNoteActivity extends AppCompatActivity {
         databaseHandler = new DBManager(this);
         databaseHandler.open();
 
-        checkUpdateNote = getIntent().getExtras().getBoolean("checkUpdate",true);
+        checkUpdateNote = getIntent().getExtras().getBoolean("checkUpdate", true);
 
 
-
-        if(!checkUpdateNote)
-       {
-           eventClickAdd();
-       }
-
+        if (!checkUpdateNote) {
+            eventClickAdd();
+        }
 
 
     }
 
 
-    private void eventClickAdd()
-    {
+    private void eventClickAdd() {
         back.setOnClickListener(v -> {
             finish();
         });
 
         tvSave.setOnClickListener(view -> {
 
+
+            Intent resultIntent = new Intent();
+
+
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date date = new Date();
-            String time =  dateFormat.format(date) ;
+            String time = dateFormat.format(date);
 
             Note note = new Note();
+
             note.setTitle(edTitle.getText().toString());
             note.setContent(edContent.getText().toString());
             note.setTimeEdit(time.toString());
 
             databaseHandler.addNote(note);
+
+
+            resultIntent.putExtra("note", note);
+            setResult(Activity.RESULT_OK, resultIntent);
             finish();
+
 
         });
     }

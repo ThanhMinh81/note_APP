@@ -15,6 +15,10 @@ public class Note implements Parcelable {
     String content ;
     String timeEdit ;
 
+    Boolean checkSelect = true ;
+
+
+
     public Note() {
     }
 
@@ -74,6 +78,14 @@ public class Note implements Parcelable {
 
     public void setTimeEdit(String timeEdit) {
         this.timeEdit = timeEdit;
+    }
+
+    public Boolean getCheckSelect() {
+        return checkSelect;
+    }
+
+    public void setCheckSelect(Boolean checkSelect) {
+        this.checkSelect = checkSelect;
     }
 
     @Override
