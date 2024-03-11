@@ -14,45 +14,103 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-
     </androidx.appcompat.widget.Toolbar>
 
-   <LinearLayout
-       android:id="@+id/layoutUpdateNote"
-       android:background="@drawable/border_radius"
-       android:layout_marginTop="?attr/actionBarSize"
-       android:layout_width="match_parent"
-       android:orientation="vertical"
-       android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/layoutUpdateNote"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbarUpdate"
+        tools:ignore="MissingConstraints">
 
+        <EditText
+            android:id="@+id/edTitleNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter text..."
+            android:textSize="20sp"
+            app:layout_constraintTop_toBottomOf="@+id/toolbarUpdate" />
 
-       <EditText
-           android:id="@+id/edTitleNote"
-           android:layout_marginTop="10dp"
-           android:layout_marginBottom="10dp"
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:hint="Enter text..."
-           android:textSize="20sp"
-           app:layout_constraintTop_toBottomOf="@+id/toolbarUpdate" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-       <EditText
-           android:id="@+id/edContentNote"
-           android:layout_width="match_parent"
-           android:layout_height="match_parent"
-           android:layout_marginTop="10dp"
-           android:gravity="top|start"
-           android:hint="Enter text..."
-           android:inputType="textMultiLine"
-           android:lines="10"
-           android:maxLines="20"
-           android:minLines="6"
-           android:scrollbars="vertical"
-           android:textSize="20sp"
-           app:layout_constraintTop_toBottomOf="@+id/edTitleNote" />
+            <EditText
+                android:id="@+id/edContentNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="8"
+                android:gravity="top|start"
+                android:hint="Enter text..."
+                android:inputType="textMultiLine"
+                android:lines="20"
+                android:maxLines="20"
+                android:minLines="6"
+                android:scrollbars="vertical"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
 
-   </LinearLayout>
+                <CheckBox
+                    android:id="@+id/cbBold"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/checkbox_formmated"
+                    android:button="@null"
+                    android:drawableBottom="@drawable/icons8bold24"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false" />
+
+                <CheckBox
+                    android:id="@+id/cbItalic"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/checkbox_formmated"
+                    android:button="@null"
+                    android:drawableBottom="@drawable/icons8italic24"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false" />
+
+                <CheckBox
+                    android:id="@+id/cbUnderline"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/checkbox_formmated"
+                    android:button="@null"
+                    android:drawableBottom="@drawable/icons8underline24"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false" />
+
+                <CheckBox
+                    android:id="@+id/cbColorText"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/checkbox_formmated"
+                    android:button="@null"
+                    android:drawableBottom="@drawable/icons8textcolor24"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

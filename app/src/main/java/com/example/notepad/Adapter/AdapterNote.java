@@ -1,7 +1,13 @@
 package com.example.notepad.Adapter;
 
+import static com.example.notepad.R.*;
+
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -13,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,6 +37,9 @@ public class AdapterNote extends  RecyclerView.Adapter<AdapterNote.ViewHolder> {
     private Context context ;
 
     private IClickUpdate iClickUpdate ;
+
+    private String themeNote  = "default";
+    private  String colorTheme ="#ffff99";
 
     private String searchText = new String() ;
 
@@ -107,6 +117,63 @@ public class AdapterNote extends  RecyclerView.Adapter<AdapterNote.ViewHolder> {
               holder.constraintLayout.setOnClickListener(v -> {
                   iClickUpdate.click(note);
               });
+
+
+
+              Drawable myIcon = AppCompatResources.getDrawable(context, drawable.border_radius_corners);
+
+//              if(note.getBgColors().contains("#"))
+//              {
+//                  ColorFilter filter = new LightingColorFilter(Color.parseColor(note.getBgColors()),Color.parseColor(note.getBgColors()));
+//                  myIcon.setColorFilter(filter);
+
+                  // Chuyển đổi Drawable thành GradientDrawable
+                  GradientDrawable gradientDrawable = (GradientDrawable) myIcon;
+
+            if(themeNote.equals("default"))
+            {
+                // Thiết lập màu sắc cho viền
+                gradientDrawable.setStroke(5, Color.parseColor("#836E4C"));
+//                Log.d("colorrr",note.getBgColors());
+                gradientDrawable.setColor(Color.parseColor(note.getBgColors()));
+//              }
+//              else if(note.getBgColors().contains("-"))
+//              {
+//                  ColorFilter filter = new LightingColorFilter(Integer.parseInt(note.getBgColors()),Integer.parseInt(note.getBgColors()));
+
+                // Chuyển đổi Drawable thành GradientDrawable
+//                  GradientDrawable gradientDrawable = (GradientDrawable) myIcon;
+
+                // Thiết lập màu sắc cho viền
+//                  gradientDrawable.setStroke(10, Color.parseColor("#f9ca24"));
+//                  gradientDrawable.setColor(Color.parseColor(note.getBgColors()));
+
+
+//                  myIcon.setColorFilter(filter);
+                holder.constraintLayout.setBackground(myIcon);
+            }else {
+//                gradientDrawable.setStroke(5, Color.parseColor(this.themeNote));
+//                gradientDrawable.setColor(Color.parseColor(note.getBgColors()));
+//                holder.constraintLayout.setBackground(myIcon);
+
+                if(note.getBgColors().equals("#ffff99"))
+                {
+                    gradientDrawable.setStroke(5, Color.parseColor(colorTheme));
+//                Log.d("colorrr",note.getBgColors());
+                    gradientDrawable.setColor(Color.parseColor(colorTheme));
+                    holder.constraintLayout.setBackground(myIcon);
+                }else {
+                    gradientDrawable.setStroke(5, Color.parseColor("#836E4C"));
+//                Log.d("colorrr",note.getBgColors());
+                    gradientDrawable.setColor(Color.parseColor(note.getBgColors()));
+                    holder.constraintLayout.setBackground(myIcon);
+                }
+
+
+            }
+
+//              }
+
           }
 
     }
@@ -130,14 +197,12 @@ public class AdapterNote extends  RecyclerView.Adapter<AdapterNote.ViewHolder> {
               tvTime = itemView.findViewById(R.id.tvTime);
               tvContent = itemView.findViewById(R.id.tvContent);
               constraintLayout = itemView.findViewById(R.id.itemLayout);
-
           }else {
               tvTitle = itemView.findViewById(R.id.tvTitle);
               tvTime = itemView.findViewById(R.id.tvTime);
               tvContent = itemView.findViewById(R.id.tvContent);
               constraintLayout = itemView.findViewById(R.id.itemLayout);
           }
-
         }
     }
 
@@ -147,5 +212,13 @@ public class AdapterNote extends  RecyclerView.Adapter<AdapterNote.ViewHolder> {
         this.searchText = searchText;
         notifyDataSetChanged();
     }
+    public void setLayoutNote(String textTheme , String bgColor)
+    {
+        this.themeNote = textTheme;
+        this.colorTheme = bgColor ;
+        notifyDataSetChanged();
+    }
+
+
 
 }

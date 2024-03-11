@@ -1,5 +1,6 @@
 package com.example.notepad.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -23,6 +24,7 @@ import com.example.notepad.Adapter.AdapterSelect;
 import com.example.notepad.Database.DBManager;
 import com.example.notepad.Database.DatabaseHandler;
 import com.example.notepad.Interface.IClickSelect;
+import com.example.notepad.MainActivity;
 import com.example.notepad.Model.Note;
 import com.example.notepad.R;
 import com.example.notepad.ViewModel.DataViewModel;
@@ -112,8 +114,16 @@ public class SelectAllActivity extends AppCompatActivity {
             }
 
             //delete note duoc pick
-
             databaseHandler.deleteNode(strings);
+
+            // tra ve mang moi
+            Intent intent = new Intent();
+            intent.putExtra("delete","success");
+            setResult(RESULT_OK,intent);
+            finish();
+
+
+
 
         }else if(id == R.id.nav_export_select)
         {

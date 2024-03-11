@@ -21,6 +21,8 @@ public class DataViewModel extends ViewModel {
     private  MutableLiveData<ArrayList<Note>> listMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<String> stringMutableLiveData = new MutableLiveData<>();
 
+    private MutableLiveData<String> themeString  = new MutableLiveData<>();
+
     private MutableLiveData<Note>  mutableLiveDataNote = new MutableLiveData<>();
 
     private MutableLiveData<String> onSelectedSort = new MutableLiveData<>();
@@ -62,6 +64,14 @@ public class DataViewModel extends ViewModel {
 
     public void setOnSelectedSort(String onSelectedSort) {
         this.onSelectedSort.setValue(onSelectedSort);
+    }
+
+    public MutableLiveData<String> getThemeString() {
+        return themeString;
+    }
+
+    public void setThemeString(String themeString) {
+        this.themeString.setValue(themeString);
     }
 
     public MutableLiveData<Note> getMutableLiveDataNote() {

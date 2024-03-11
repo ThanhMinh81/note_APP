@@ -4,15 +4,18 @@ import static android.app.Activity.RESULT_OK;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -36,7 +39,10 @@ import com.example.notepad.Model.Note;
 import com.example.notepad.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 
@@ -50,6 +56,10 @@ public class HomeFragment extends Fragment {
     IClickUpdate iClickUpdate;
     DataViewModel dataViewModel;
 
+    ConstraintLayout constraintLayout ;
+
+    SeekBar seekBar;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -58,71 +68,130 @@ public class HomeFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
 
-        iClickUpdate = new IClickUpdate() {
-            @Override
-            public void click(Note note) {
-
-//                Log.d("fasdfas",note.getIdNote() + " ");
-                Intent intent = new Intent(getActivity(), UpdateActivity.class);
-
-                intent.putExtra("note", note);
-
-                startActivityForResult(intent, 10);
-
-
-            }
+        iClickUpdate = note -> {
+            Intent intent = new Intent(getActivity(), UpdateActivity.class);
+            intent.putExtra("note", note);
+            startActivityForResult(intent, 10);
         };
 
-//        home fragment nhan biet dc data change
+        /// xetttt mauuuuu cho bg fragment
+        constraintLayout = view.findViewById(R.id.fragmentHomeConstrain);
+        constraintLayout.setBackgroundColor(getResources().getColor(R.color.backgroundItem));
 
+        /////===
 
         notes = new ArrayList<>();
         apdaterNote = new AdapterNote(notes, getContext(), iClickUpdate);
         rcvHome = view.findViewById(R.id.rcvHome);
-
-
         rcvHome.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         rcvHome.setAdapter(apdaterNote);
         apdaterNote.notifyDataSetChanged();
 
-        //
+        TextView textView = view.findViewById(R.id.tvTest);
 
-        // tra ve node moi
 
-        // update node trong viewmodel
+        final Integer[] fontNames = {20,  25 ,30, 35 , 40, 45 , 50 };
+
+        seekBar = view.findViewById(R.id.seebarFont);
+
+
+        seekBar.setMax(fontNames.length - 1);
+        textView.setText(fontNames[0].toString());
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                // Hiển thị tên font chữ tương ứng với giá trị của SeekBar
+                textView.setText(fontNames[progress].toString());
+//                textView.setTypeface(Typeface.create(fontNames[progress], Typeface.NORMAL));
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,fontNames[progress] );
+
+
+                // Áp dụng font chữ tương ứng vào TextView hoặc EditText, nếu cần
+                // Ví dụ: fontTextView.setTypeface(Typeface.create(fontNames[progress], Typeface.NORMAL));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // Không cần xử lý ở đây
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // Không cần xử lý ở đây
+            }
+        });
+
 
 
         dataViewModel = new ViewModelProvider(requireActivity()).get(DataViewModel.class);
 
-        dataViewModel.getListMutableLiveData().observe(getViewLifecycleOwner(), new Observer<ArrayList<Note>>() {
-            @Override
-            public void onChanged(ArrayList<Note> noteArrayList) {
+        dataViewModel.getListMutableLiveData().observe(getViewLifecycleOwner(), noteArrayList -> {
+            notes.clear();
+            notes.addAll(noteArrayList);
+            apdaterNote.notifyDataSetChanged();
+        });
 
-                notes.clear();
-                notes.addAll(noteArrayList);
-                apdaterNote.notifyDataSetChanged();
 
+        dataViewModel.getThemeString().observe(getViewLifecycleOwner(), s -> {
+
+            if(s.equals("Solarized"))
+            {
+                apdaterNote.setLayoutNote("Solarized",String.valueOf(getResources().getColor(R.color.themeSolari)));
+            }
+
+        });
+
+        dataViewModel.getOnSelectedSort().observe(getViewLifecycleOwner(), s -> {
+
+            switch (s) {
+                case "TitleAtoZ":
+                    Collections.sort(notes, Comparator.comparing(Note::getTitle));
+                    apdaterNote.notifyDataSetChanged();
+                    break;
+                case "TitleZtoA":
+                    Collections.sort(notes, Comparator.comparing(Note::getTitle).reversed());
+                    apdaterNote.notifyDataSetChanged();
+
+                    break;
+                case "title_newest":
+                    Collections.sort(notes, Comparator.comparing(Note::getTimeEdit).reversed());
+                    apdaterNote.notifyDataSetChanged();
+
+                    break;
+                case "title_oldest":
+                    Collections.sort(notes, Comparator.comparing(Note::getTimeEdit));
+                    apdaterNote.notifyDataSetChanged();
+                    break;
+
+                default:
+                    return;
             }
         });
 
-        dataViewModel.getStringMutableLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
+
+        dataViewModel.getThemeString().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String s) {
-                apdaterNote.setFilter(notes, s);
-                Log.d("thaydoidulieu", s.toString());
+
+                switch (s)
+                {
+                    case "Solarized":
+                         constraintLayout.setBackgroundColor(getResources().getColor(R.color.themeSolari));
+                        break;
+                }
+
             }
         });
 
-
+        dataViewModel.getStringMutableLiveData().observe(getViewLifecycleOwner(), s -> apdaterNote.setFilter(notes, s));
 
         return view;
 
     }
 
-
     public void getData(List<Note> noteArrayList) {
         noteArrayList.addAll(noteArrayList);
-//        Log.d("checkID", noteArrayList.get(0).getIdNote() + " ");
         apdaterNote.notifyDataSetChanged();
     }
 
@@ -134,10 +203,8 @@ public class HomeFragment extends Fragment {
 
             if (data != null) {
                 Note note = (Note) data.getParcelableExtra("note");
-
                 dataViewModel.updateNote(note);
                 dataViewModel.setMutableLiveDataNote(note);
-
             }
 
         }

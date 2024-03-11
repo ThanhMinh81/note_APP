@@ -58,9 +58,9 @@
     <group android:id="@+id/setting"    android:checkableBehavior="single">
 
         <item
-            android:id="@+id/nav_setting"
+            android:id="@+id/nav_setting_theme"
             android:icon="@drawable/icons8setting48"
-            android:title="Settings"/>
+            android:title="Theme"/>
         <item
             android:id="@+id/nav_help"
             android:icon="@drawable/icons8delete48"

@@ -15,18 +15,36 @@ public class Note implements Parcelable {
     String content ;
     String timeEdit ;
 
+    String bgColors ;
+
     Boolean checkSelect = true ;
+
+    int idNoteStyle ;
+    String styleItalic ;
+    String styleBold ;
+    public String styleTextColor ;
+    String styleUnderline ;
+
+     String lat;
+
 
 
 
     public Note() {
     }
 
-    public Note(int idNote, String title, String content, String timeEdit) {
+    public Note(int idNote, String title, String content, String timeEdit, String bgColors, Boolean checkSelect, int idNoteStyle, String styleItalic, String styleBold, String styleTextColor, String styleUnderline) {
         this.idNote = idNote;
         this.title = title;
         this.content = content;
         this.timeEdit = timeEdit;
+        this.bgColors = bgColors;
+        this.checkSelect = checkSelect;
+        this.idNoteStyle = idNoteStyle;
+        this.styleItalic = styleItalic;
+        this.styleBold = styleBold;
+        this.styleTextColor = styleTextColor;
+        this.styleUnderline = styleUnderline;
     }
 
     protected Note(Parcel in) {
@@ -34,7 +52,16 @@ public class Note implements Parcelable {
         title = in.readString();
         content = in.readString();
         timeEdit = in.readString();
+        bgColors = in.readString();
+        byte tmpCheckSelect = in.readByte();
+        checkSelect = tmpCheckSelect == 0 ? null : tmpCheckSelect == 1;
+        idNoteStyle = in.readInt();
+        styleItalic = in.readString();
+        styleBold = in.readString();
+        styleTextColor = in.readString();
+        styleUnderline = in.readString();
     }
+
 
     public static final Creator<Note> CREATOR = new Creator<Note>() {
         @Override
@@ -47,6 +74,38 @@ public class Note implements Parcelable {
             return new Note[size];
         }
     };
+
+    public String getStyleItalic() {
+        return styleItalic;
+    }
+
+    public void setStyleItalic(String styleItalic) {
+        this.styleItalic = styleItalic;
+    }
+
+    public String getStyleBold() {
+        return styleBold;
+    }
+
+    public void setStyleBold(String styleBold) {
+        this.styleBold = styleBold;
+    }
+
+    public String getStyleTextColor() {
+        return styleTextColor;
+    }
+
+    public void setStyleTextColor(String styleTextColor) {
+        this.styleTextColor = styleTextColor;
+    }
+
+    public String getStyleUnderline() {
+        return styleUnderline;
+    }
+
+    public void setStyleUnderline(String styleUnderline) {
+        this.styleUnderline = styleUnderline;
+    }
 
     public int getIdNote() {
         return idNote;
@@ -88,16 +147,42 @@ public class Note implements Parcelable {
         this.checkSelect = checkSelect;
     }
 
+    public String getBgColors() {
+        return bgColors;
+    }
+
+
+
+    public void setBgColors(String bgColors) {
+        this.bgColors = bgColors;
+    }
+
     @Override
     public int describeContents() {
         return 0;
     }
 
     @Override
-    public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeInt(idNote);
-        dest.writeString(title);
-        dest.writeString(content);
-        dest.writeString(timeEdit);
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+
+        parcel.writeInt(idNote);
+        parcel.writeString(title);
+        parcel.writeString(content);
+        parcel.writeString(timeEdit);
+        parcel.writeString(bgColors);
+        parcel.writeByte((byte) (checkSelect == null ? 0 : checkSelect ? 1 : 2));
+        parcel.writeInt(idNoteStyle);
+        parcel.writeString(styleItalic);
+        parcel.writeString(styleBold);
+        parcel.writeString(styleTextColor);
+        parcel.writeString(styleUnderline);
+    }
+
+    public int getIdNoteStyle() {
+        return idNoteStyle;
+    }
+
+    public void setIdNoteStyle(int idNoteStyle) {
+        this.idNoteStyle = idNoteStyle;
     }
 }

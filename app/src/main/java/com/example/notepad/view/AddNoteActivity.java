@@ -66,9 +66,7 @@ public class AddNoteActivity extends AppCompatActivity {
 
         tvSave.setOnClickListener(view -> {
 
-
             Intent resultIntent = new Intent();
-
 
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date date = new Date();
@@ -79,14 +77,16 @@ public class AddNoteActivity extends AppCompatActivity {
             note.setTitle(edTitle.getText().toString());
             note.setContent(edContent.getText().toString());
             note.setTimeEdit(time.toString());
-
+//            note.setBgColors("#836E4C");
+            note.setBgColors("#ffff99");
+            note.setStyleTextColor("#1B1A18");
+            note.setStyleUnderline("false");
+            note.setStyleBold("false");
+            note.setStyleItalic("false");
             databaseHandler.addNote(note);
-
-
             resultIntent.putExtra("note", note);
             setResult(Activity.RESULT_OK, resultIntent);
             finish();
-
 
         });
     }

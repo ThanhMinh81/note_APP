@@ -14,7 +14,7 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:text="Sort by"
+            android:text="Select Theme"
             android:textStyle="bold"
             android:textSize="18sp"
             android:layout_width="wrap_content"
@@ -34,23 +34,23 @@
 
             <RadioButton
                 app:buttonTint="@color/appbar"
-                android:id="@+id/title_newest"
+                android:id="@+id/theme_Light"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="false"
                 android:padding="4dp"
-                android:text="edit date : from newest"
+                android:text="Light"
                 android:textAlignment="textStart"
                 android:textSize="20sp" />
 
             <RadioButton
                 app:buttonTint="@color/appbar"
-                android:id="@+id/title_oldest"
+                android:id="@+id/theme_Solarized"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="false"
                 android:padding="4dp"
-                android:text="edit data : from oldest"
+                android:text="Solarized"
                 android:textAlignment="textStart"
                 android:textSize="20sp" />
 
@@ -102,10 +102,10 @@
 
             <TextView
                 android:layout_marginRight="30sp"
-                android:id="@+id/tvSort"
+                android:id="@+id/tvupdate"
                 android:textStyle="bold"
                 android:textColor="@color/appbar"
-                android:text="SORT"
+                android:text="UPDATE"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 

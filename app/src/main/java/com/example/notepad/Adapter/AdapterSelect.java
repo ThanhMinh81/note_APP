@@ -65,7 +65,7 @@ public class AdapterSelect extends RecyclerView.Adapter<AdapterSelect.ViewHolder
             {
                 holder.constraintLayout.setBackground(ContextCompat.getDrawable(context,R.drawable.border_selected));
             }else {
-                holder.constraintLayout.setBackground(ContextCompat.getDrawable(context,R.drawable.border_radius));
+                holder.constraintLayout.setBackground(ContextCompat.getDrawable(context,R.drawable.border_radius_select));
 
             }
     }

@@ -4,6 +4,7 @@
     <!-- Mục menu sử dụng actionLayout -->
 
     <item
+        android:iconTint="@color/white"
         android:id="@+id/sort_menu"
         android:title="SORT"
         app:showAsAction="always"/>
