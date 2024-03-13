@@ -24,16 +24,14 @@ public class Note implements Parcelable {
     String styleBold ;
     public String styleTextColor ;
     String styleUnderline ;
-
-     String lat;
-
+    String idCategory ;
 
 
 
     public Note() {
     }
 
-    public Note(int idNote, String title, String content, String timeEdit, String bgColors, Boolean checkSelect, int idNoteStyle, String styleItalic, String styleBold, String styleTextColor, String styleUnderline) {
+    public Note(int idNote, String title, String content, String timeEdit, String bgColors, Boolean checkSelect, int idNoteStyle, String styleItalic, String styleBold, String styleTextColor, String styleUnderline, String idCategory) {
         this.idNote = idNote;
         this.title = title;
         this.content = content;
@@ -45,7 +43,9 @@ public class Note implements Parcelable {
         this.styleBold = styleBold;
         this.styleTextColor = styleTextColor;
         this.styleUnderline = styleUnderline;
+        this.idCategory = idCategory;
     }
+
 
     protected Note(Parcel in) {
         idNote = in.readInt();
@@ -60,8 +60,8 @@ public class Note implements Parcelable {
         styleBold = in.readString();
         styleTextColor = in.readString();
         styleUnderline = in.readString();
+        idCategory = in.readString();
     }
-
 
     public static final Creator<Note> CREATOR = new Creator<Note>() {
         @Override
@@ -113,6 +113,14 @@ public class Note implements Parcelable {
 
     public void setIdNote(int idNote) {
         this.idNote = idNote;
+    }
+
+    public String getIdCategory() {
+        return idCategory;
+    }
+
+    public void setIdCategory(String idCategory) {
+        this.idCategory = idCategory;
     }
 
     public String getTitle() {
@@ -176,6 +184,7 @@ public class Note implements Parcelable {
         parcel.writeString(styleBold);
         parcel.writeString(styleTextColor);
         parcel.writeString(styleUnderline);
+        parcel.writeString(idCategory);
     }
 
     public int getIdNoteStyle() {

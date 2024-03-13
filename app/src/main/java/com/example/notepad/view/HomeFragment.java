@@ -11,7 +11,9 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -58,6 +60,8 @@ public class HomeFragment extends Fragment {
 
     ConstraintLayout constraintLayout ;
 
+
+
     SeekBar seekBar;
 
     @Nullable
@@ -87,43 +91,6 @@ public class HomeFragment extends Fragment {
         rcvHome.setAdapter(apdaterNote);
         apdaterNote.notifyDataSetChanged();
 
-        TextView textView = view.findViewById(R.id.tvTest);
-
-
-        final Integer[] fontNames = {20,  25 ,30, 35 , 40, 45 , 50 };
-
-        seekBar = view.findViewById(R.id.seebarFont);
-
-
-        seekBar.setMax(fontNames.length - 1);
-        textView.setText(fontNames[0].toString());
-
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                // Hiển thị tên font chữ tương ứng với giá trị của SeekBar
-                textView.setText(fontNames[progress].toString());
-//                textView.setTypeface(Typeface.create(fontNames[progress], Typeface.NORMAL));
-                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,fontNames[progress] );
-
-
-                // Áp dụng font chữ tương ứng vào TextView hoặc EditText, nếu cần
-                // Ví dụ: fontTextView.setTypeface(Typeface.create(fontNames[progress], Typeface.NORMAL));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // Không cần xử lý ở đây
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                // Không cần xử lý ở đây
-            }
-        });
-
-
-
         dataViewModel = new ViewModelProvider(requireActivity()).get(DataViewModel.class);
 
         dataViewModel.getListMutableLiveData().observe(getViewLifecycleOwner(), noteArrayList -> {
@@ -134,13 +101,14 @@ public class HomeFragment extends Fragment {
 
 
         dataViewModel.getThemeString().observe(getViewLifecycleOwner(), s -> {
-
-            if(s.equals("Solarized"))
+            if(s.equals("Solarized")) {
+                apdaterNote.setLayoutNote("Solarized","#FCF6E0");
+            }else if(s.equals("Default"))
             {
-                apdaterNote.setLayoutNote("Solarized",String.valueOf(getResources().getColor(R.color.themeSolari)));
+                apdaterNote.setLayoutNote("Default","#FCF6E0");
             }
-
         });
+
 
         dataViewModel.getOnSelectedSort().observe(getViewLifecycleOwner(), s -> {
 
@@ -169,6 +137,35 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        rcvHome.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            GestureDetector gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    View childView = rcvHome.findChildViewUnder(e.getX(), e.getY());
+                    if (childView != null) {
+                        // Thay đổi background của item khi nhấn giữ lâu
+                        childView.setBackgroundResource(R.drawable.border_selected);
+
+                    }
+                }
+            });
+
+            @Override
+            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                gestureDetector.onTouchEvent(e);
+                return false;
+            }
+
+            @Override
+            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+            }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+            }
+        });
+
+
 
         dataViewModel.getThemeString().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
@@ -177,6 +174,7 @@ public class HomeFragment extends Fragment {
                 switch (s)
                 {
                     case "Solarized":
+                        Log.d("Fasfsa","thaydoi");
                          constraintLayout.setBackgroundColor(getResources().getColor(R.color.themeSolari));
                         break;
                 }
@@ -202,9 +200,12 @@ public class HomeFragment extends Fragment {
         if (requestCode == 10) {
 
             if (data != null) {
+
                 Note note = (Note) data.getParcelableExtra("note");
+                Log.d("boldHomeFragment",note.getStyleBold());
                 dataViewModel.updateNote(note);
                 dataViewModel.setMutableLiveDataNote(note);
+
             }
 
         }

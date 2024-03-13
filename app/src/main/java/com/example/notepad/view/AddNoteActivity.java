@@ -1,7 +1,9 @@
 package com.example.notepad.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,13 +17,19 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.notepad.Database.DBManager;
 import com.example.notepad.Model.Note;
 import com.example.notepad.R;
+import com.example.notepad.ViewModel.DataViewModel;
+import com.example.notepad.ViewModel.MyViewModelFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class AddNoteActivity extends AppCompatActivity {
@@ -34,6 +42,18 @@ public class AddNoteActivity extends AppCompatActivity {
 
     Boolean checkUpdateNote = true;
 
+    SharedPreferences sharedPreferences ;
+    String themeStyle ;
+
+
+
+    ConstraintLayout constraintLayout ;
+
+    Toolbar toolbarAdd ;
+
+    TextView tvTitle , tvUndo ;
+
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,19 +65,47 @@ public class AddNoteActivity extends AppCompatActivity {
         tvSave = this.<TextView>findViewById(R.id.saveNote);
         back = this.<ImageView>findViewById(R.id.backAddNote);
 
+        tvTitle = this.<TextView>findViewById(R.id.tvTitle);
+        tvUndo = this.<TextView>findViewById(R.id.tvUndo);
+
+        toolbarAdd = findViewById(R.id.toolbarAdd);
+
+
+        constraintLayout = this.<ConstraintLayout>findViewById(R.id.addlayout);
+
         databaseHandler = new DBManager(this);
         databaseHandler.open();
 
         checkUpdateNote = getIntent().getExtras().getBoolean("checkUpdate", true);
+
+        sharedPreferences = AddNoteActivity.this.getSharedPreferences("MyTheme", Context.MODE_PRIVATE);
+
+
+        themeStyle = sharedPreferences.getString("theme_system", "Default");
+
+        if(themeStyle.equals("Solarized"))
+        {
+
+            constraintLayout.setBackgroundColor(getResources().getColor(R.color.themeSolari));
+            toolbarAdd.setBackgroundColor(getResources().getColor(R.color.themeSolari));
+            tvUndo.setTextColor(getResources().getColor(R.color.colorTextSolari));
+            tvTitle.setTextColor(getResources().getColor(R.color.colorTextSolari));
+            tvSave.setTextColor(getResources().getColor(R.color.colorTextSolari));
+
+        }else  {
+            constraintLayout.setBackgroundColor(getResources().getColor(R.color.themeSolari2));
+            tvUndo.setTextColor(getResources().getColor(R.color.white));
+            tvTitle.setTextColor(getResources().getColor(R.color.white));
+            tvSave.setTextColor(getResources().getColor(R.color.white));
+
+        }
 
 
         if (!checkUpdateNote) {
             eventClickAdd();
         }
 
-
     }
-
 
     private void eventClickAdd() {
         back.setOnClickListener(v -> {
@@ -78,7 +126,7 @@ public class AddNoteActivity extends AppCompatActivity {
             note.setContent(edContent.getText().toString());
             note.setTimeEdit(time.toString());
 //            note.setBgColors("#836E4C");
-            note.setBgColors("#ffff99");
+            note.setBgColors("#FCFACA");
             note.setStyleTextColor("#1B1A18");
             note.setStyleUnderline("false");
             note.setStyleBold("false");

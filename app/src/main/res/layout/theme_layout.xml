@@ -34,12 +34,12 @@
 
             <RadioButton
                 app:buttonTint="@color/appbar"
-                android:id="@+id/theme_Light"
+                android:id="@+id/theme_Default"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="false"
                 android:padding="4dp"
-                android:text="Light"
+                android:text="Default"
                 android:textAlignment="textStart"
                 android:textSize="20sp" />
 

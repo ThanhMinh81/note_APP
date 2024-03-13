@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -40,11 +41,13 @@ import android.widget.Toast;
 
 import com.example.notepad.Database.DBManager;
 import com.example.notepad.Interface.IData;
+import com.example.notepad.Model.Category;
 import com.example.notepad.Model.Note;
 import com.example.notepad.ViewModel.DataViewModel;
 import com.example.notepad.ViewModel.MyViewModelFactory;
 import com.example.notepad.view.AboutFragment;
 import com.example.notepad.view.AddNoteActivity;
+import com.example.notepad.view.CategoryFragment;
 import com.example.notepad.view.HomeFragment;
 import com.example.notepad.view.SelectAllActivity;
 import com.example.notepad.view.SettingFragment;
@@ -65,24 +68,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     Dialog dialog;
 
-    MenuItem menuItemSort ;
 
     String selector = "";
     IData iData;
 
-    Toolbar toolbar ;
+    Toolbar toolbar;
 
-    MenuItem searchItem ;
+    MenuItem searchItem;
 
-    ConstraintLayout constraintLayout ;
+    ConstraintLayout constraintLayout;
 
     // icon open menu selecter
-    Drawable overflowIcon ;
+    Drawable overflowIcon;
 
-    NavigationView   navigationView  ;
+    NavigationView navigationView;
 
-    String stringValue ;
+    String valueTheme;
 
+    ActionBarDrawerToggle toggle;
+    int itemId = 0;
 
 
     @Override
@@ -90,24 +94,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-         toolbar = findViewById(R.id.toolbar); //Ignore red line errors
+        toolbar = findViewById(R.id.toolbar); //Ignore red line errors
         setSupportActionBar(toolbar);
 
         overflowIcon = toolbar.getOverflowIcon();
 
+
         drawerLayout = findViewById(R.id.drawer_layout);
         floatingActionButton = findViewById(R.id.fab);
-            navigationView = findViewById(R.id.nav_view);
+
+        navigationView = findViewById(R.id.nav_view);
+
         navigationView.setNavigationItemSelectedListener(this);
 
-//        navigationView.setBackgroundColor(getResources().getColor(R.color.red));
 
         dialog = new Dialog(MainActivity.this);
 
         // tham so truyen vao
         databaseHandler = new DBManager(this);
         databaseHandler.open();
-        int abc = databaseHandler.getAllNotes().size();
+//        int abc = databaseHandler.getAllNotes().size();
+//        databaseHandler.getAllNoteCategory() ;
+        databaseHandler.getAllCategory();
 
 
         MyViewModelFactory factory = new MyViewModelFactory(databaseHandler);
@@ -115,11 +123,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dataViewModel = new ViewModelProvider(this, factory).get(DataViewModel.class);
 
 
-
         dataViewModel.getData();
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.app_name, R.string.app_name);
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.app_name, R.string.app_name);
         toggle.getDrawerArrowDrawable().setColor(getResources().getColor(R.color.white));
+
+        dataViewModel.getAllListCategory();
+
+
+        dataViewModel.getListCategory().observe(this, new Observer<ArrayList<Category>>() {
+            @Override
+            public void onChanged(ArrayList<Category> categories) {
+                itemId = 0;
+                MenuItem item = navigationView.getMenu().getItem(1);
+                SubMenu subMenu = item.getSubMenu();
+                int size = subMenu.size();
+                for (int i = size - 1; i > 0; i--) {
+                    subMenu.removeItem(i);
+                }
+                for (Category category : categories) {
+                    itemId++;
+                    subMenu.add(Menu.NONE, Integer.parseInt(category.getIdCategory()), Menu.NONE, category.getNameCategory()).setIcon(R.drawable.icons8tag40);
+                }
+
+            }
+        });
+
 
         drawerLayout.addDrawerListener(toggle);
 
@@ -164,64 +193,81 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onChanged(String s) {
 
-                switch (s)
-                {
-                    case  "Solarized" :
-//                         Lấy reference đến OverflowIcon của Toolbar
-//                          overflowIcon = toolbar.getOverflowIcon();
+                switch (s) {
+                    case "Solarized":
+                        // icon de mo menu ben trai ra
+                        overflowIcon = toolbar.getOverflowIcon();
 
-//                         Thay đổi màu của OverflowIcon
+                        //   Thay đổi màu của OverflowIcon
                         if (overflowIcon != null) {
-                            overflowIcon.setColorFilter(ContextCompat.getColor(MainActivity.this, R.color.themeSolari2), PorterDuff.Mode.SRC_IN);
+                            overflowIcon.setColorFilter(ContextCompat.getColor(MainActivity.this, R.color.colorTextSolari), PorterDuff.Mode.SRC_IN);
                             toolbar.setOverflowIcon(overflowIcon);
                         }
+
+
                         // thay doi mau tooolbar
                         toolbar.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.themeSolari));
 
-//                        NavigationView   navigationView = findViewById(R.id.nav_view);
                         // thay doi background
                         navigationView.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.themeSolari));
 
-
-                        View headerView = navigationView.getHeaderView(0); // Lấy reference đến nav_header
-                        LinearLayout linearLayout = headerView.findViewById(R.id.idHeaderNav); // Tìm LinearLayout trong nav_header
+                        View headerView = navigationView.getHeaderView(0);
+                        LinearLayout linearLayout = headerView.findViewById(R.id.idHeaderNav);
                         linearLayout.setBackgroundColor(getResources().getColor(R.color.themeSolari));
+
                         toggle.getDrawerArrowDrawable().setColor(getResources().getColor(R.color.colorTextSolari));
+                        // thay doi mau sac cua toolbar
                         toolbar.setTitleTextColor(getResources().getColor(R.color.colorTextSolari));
 
+                        if (searchItem != null) {
+                            Drawable icon = searchItem.getIcon();
 
-
-                        // Lấy reference đến icon của MenuItem
-                        Drawable icon = searchItem.getIcon();
-
-                        // Thay đổi màu của icon menu
-                        if (icon != null) {
-                            icon.setColorFilter(ContextCompat.getColor(MainActivity.this, R.color.colorTextSolari), PorterDuff.Mode.SRC_IN);
-                            searchItem.setIcon(icon);
+                            // Thay doi mau icon
+                            if (icon != null) {
+                                icon.setColorFilter(ContextCompat.getColor(MainActivity.this, R.color.colorTextSolari), PorterDuff.Mode.SRC_IN);
+                                searchItem.setIcon(icon);
+                            }
                         }
-
-
-                        SpannableString spannable = new SpannableString(
-                                menuItemSort.getTitle().toString()
-                        );
-
-                        spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorTextSolari)),0
-                                ,spannable.length(),0);
-
-                        menuItemSort.setTitle(spannable);
                         break;
 
+                    case "Default":
+
+                        //    reference đến OverflowIcon của Toolbar
+                        overflowIcon = toolbar.getOverflowIcon();
+
+                        //   Thay đổi màu của OverflowIcon
+                        if (overflowIcon != null) {
+                            overflowIcon.setColorFilter(ContextCompat.getColor(MainActivity.this, R.color.white), PorterDuff.Mode.SRC_IN);
+                            toolbar.setOverflowIcon(overflowIcon);
+                        }
+                        // thay doi mau tooolbar
+                        toolbar.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.appbar));
+
+                        // thay doi background
+                        navigationView.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.themeSolari));
+
+                        View headerViewDefault = navigationView.getHeaderView(0);
+                        LinearLayout linearLayoutDefault = headerViewDefault.findViewById(R.id.idHeaderNav);
+                        linearLayoutDefault.setBackgroundColor(getResources().getColor(R.color.themeSolari));
+                        toggle.getDrawerArrowDrawable().setColor(getResources().getColor(R.color.white));
+                        // thay doi mau sac cua toolbar
+                        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+
+                        if (searchItem != null) {
+                            Drawable icon = searchItem.getIcon();
+
+                            // Thay doi mau icon
+                            if (icon != null) {
+                                icon.setColorFilter(ContextCompat.getColor(MainActivity.this, R.color.white), PorterDuff.Mode.SRC_IN);
+                                searchItem.setIcon(icon);
+                            }
+                        }
+                        break;
 
                 }
 
             }
         });
-
-//        if(!stringValue.equals("default"))
-//        {
-//            dataViewModel.setThemeString(stringValue);
-//        }
-//
 
     }
 
@@ -231,13 +277,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Lấy giá trị từ SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("MyTheme", Context.MODE_PRIVATE);
-        stringValue = sharedPreferences.getString("theme_system", "default");
+        valueTheme = sharedPreferences.getString("theme_system", "default");
 
-        if(!stringValue.equals("default"))
-        {
-            dataViewModel.setThemeString(stringValue);
+        Log.d("kiemtratheme", valueTheme.toString());
+
+        if (!valueTheme.equals("default")) {
+            dataViewModel.setThemeString(valueTheme);
         }
-
 
 
     }
@@ -263,54 +309,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             showDialogSort();
         }
 
-
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         // Inflate menu resource file.
         getMenuInflater().inflate(R.menu.searchview, menu);
 
-        getMenuInflater().inflate(R.menu.sort_menu,menu);
+        searchItem = menu.findItem(R.id.item_search);
 
-         menuItemSort = menu.findItem(R.id.sort_menu);
-
-         SpannableString spannable = new SpannableString(
-                 menuItemSort.getTitle().toString()
-         );
-
-         spannable.setSpan(new ForegroundColorSpan(Color.WHITE),0
-         ,spannable.length(),0);
-
-         menuItemSort.setTitle(spannable);
-
-         searchItem = menu.findItem(R.id.item_search);
-
-        // Lấy reference đến icon của MenuItem
         Drawable icon = searchItem.getIcon();
-
-        // Thay đổi màu của icon menu
-        if (icon != null) {
-            icon.setColorFilter(ContextCompat.getColor(this, R.color.white), PorterDuff.Mode.SRC_IN);
-            searchItem.setIcon(icon);
-        }
 
         SearchManager searchManager = (SearchManager) MainActivity.this.getSystemService(Context.SEARCH_SERVICE);
 
-
         SearchView searchView = null;
-
-
-
 
         if (searchItem != null) {
             searchView = (SearchView) searchItem.getActionView();
         }
         if (searchView != null) {
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(MainActivity.this.getComponentName()));
+            if (valueTheme.equals("Default")) {
+                searchView.setSearchableInfo(searchManager.getSearchableInfo(MainActivity.this.getComponentName()));
+                Drawable icon1 = searchItem.getIcon();
+                icon1.setColorFilter(ContextCompat.getColor(MainActivity.this, R.color.white), PorterDuff.Mode.SRC_IN);
+                searchItem.setIcon(icon);
+            } else {
+                searchView.setSearchableInfo(searchManager.getSearchableInfo(MainActivity.this.getComponentName()));
+                Drawable icon1 = searchItem.getIcon();
+                icon1.setColorFilter(ContextCompat.getColor(MainActivity.this, R.color.colorTextSolari), PorterDuff.Mode.SRC_IN);
+                searchItem.setIcon(icon);
+            }
         }
 
 //         Listening to search query text change
@@ -324,7 +353,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public boolean onQueryTextChange(String newText) {
-
                 dataViewModel.setStringMutableLiveData(newText.trim());
                 // list result search
                 ArrayList<Note> noteNewArrayList = new ArrayList<>();
@@ -340,27 +368,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             noteNewArrayList.add(note);
                             dataViewModel.setListMutableLiveData(noteNewArrayList);
                         }
-
                     }
                     if (count == noteArrayList.size() && !check) {
-
                         // neu khong tim thay set mang ve empty
                         ArrayList<Note> notes = new ArrayList<>();
                         dataViewModel.setListMutableLiveData(notes);
-
                     }
                 } else if (newText.trim().length() == 0) {
-
                     Log.d("fasfa", noteArrayList.size() + "");
-
                     dataViewModel.setListMutableLiveData(noteArrayList);
-
                 }
-
                 // Handle search query text change
                 return false;
             }
         });
+
+        
+
 
 //         tao menu cho selector
         getMenuInflater().inflate(R.menu.menu_option, menu);
@@ -381,39 +405,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 Note note = (Note) data.getParcelableExtra("note");
 
-                Log.d("fasfasf",note.getStyleBold());
+                Log.d("fasfasf", note.getStyleBold());
 
                 dataViewModel.setMutableLiveDataNote(note);
 
             }
 
         } else if (requestCode == 20) {
-            if(data != null)
-            {
-                String result = data.getStringExtra("delete");
-                if (result.equals("success")) {
-                    dataViewModel.getData();
-                }
-            }
+            dataViewModel.getData();
         }
 
         super.onActivityResult(requestCode, resultCode, data);
     }
-
+    
     // menu drawer selector
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
         int id = item.getItemId();
+        if (id > 0 && id <= itemId) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AboutFragment(String.valueOf(id))).commit();
 
-        if (id == R.id.fragmentHome) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
-        } else if (id == R.id.nav_about) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AboutFragment()).commit();
-        }else if(id == R.id.nav_setting_theme)
-        {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SettingFragment()).commit();
+        } else {
+            if (id == R.id.fragmentHome) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
+            } else if (id == R.id.nav_setting_theme) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SettingFragment()).commit();
 
+            } else if (id == R.id.nav_editCategory) {
+                Toast.makeText(this, "HHHH", Toast.LENGTH_SHORT).show();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CategoryFragment()).commit();
+            }
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -428,14 +449,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
         }
     }
-
     // dialog sap xep
 
     private void showDialogSort() {
 
-
         TextView tvCancle, tvSort;
-
 
         dialog.setContentView(R.layout.sort_layout);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -445,7 +463,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tvCancle = dialog.findViewById(R.id.tvCancle);
         tvSort = dialog.findViewById(R.id.tvSort);
         RadioGroup radioGroup = dialog.findViewById(R.id.radioGroup);
-
 
 
         // xap xep theo tieu de
@@ -472,7 +489,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 dataViewModel.setOnSelectedSort(selector);
 
                 dialog.dismiss();
-
 
             }
         });

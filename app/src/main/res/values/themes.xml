@@ -1,9 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.NavigationDrawer" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.NavigationDrawer" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="actionOverflowButtonStyle">@style/IconOverflow</item>
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
     </style>
 
     <style name="Theme.NotePad" parent="Base.Theme.NotePad" />
@@ -25,6 +26,7 @@
     <style name="IconOverflow" parent="Widget.AppCompat.ActionButton.Overflow">
         <item name="android:tint">@color/red</item>
     </style>
+
 
 
 

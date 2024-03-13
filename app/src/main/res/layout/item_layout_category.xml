@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:layout_margin="5dp"
+    android:background="@drawable/border_radius"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_marginLeft="10sp"
+        android:maxLines="2"
+        android:textSize="20sp"
+        android:layout_weight="2"
+        android:textColor="@color/black"
+        android:text="category1"
+        android:id="@+id/tvNameCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_margin="7dp"
+            android:src="@drawable/icons8edit48"
+            android:id="@+id/imgEditCategory"
+            android:layout_width="40dp"
+            android:layout_height="40dp"/>
+
+        <ImageView
+            android:layout_margin="7dp"
+            android:src="@drawable/icons8delete48"
+            android:id="@+id/imgDeleteCategory"
+            android:layout_width="40dp"
+            android:layout_height="40dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

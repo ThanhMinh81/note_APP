@@ -85,9 +85,11 @@ public class SettingFragment extends Fragment {
         // xap xep theo tieu de
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
 
-            if (checkedId == R.id.theme_Light) {
+            if (checkedId == R.id.theme_Solarized) {
                 selected = "Solarized";
-            } else if (checkedId == R.id.theme_Solarized) {
+            } else if (checkedId == R.id.theme_Default) {
+
+                selected = "Default";
 
             }
 
@@ -97,7 +99,13 @@ public class SettingFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                // luu theme trong file sharedPerferences
+                // xoa tat ca
+                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyTheme", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editorDelete = sharedPreferences.edit();
+                editorDelete.clear();
+                editorDelete.apply();
+
+                // Them lai theme moi
 
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("theme_system", selected);

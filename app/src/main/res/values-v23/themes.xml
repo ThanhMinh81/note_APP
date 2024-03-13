@@ -7,6 +7,7 @@
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
         <item name="titleTextColor">@color/white</item>
         <item name="actionOverflowButtonStyle">@style/IconOverflow</item>
+        <item name="floatingActionButtonStyle">@style/AppFloatingActionButton</item>
     </style>
 
     <style name="IconOverflow" parent="Widget.AppCompat.ActionButton.Overflow">
@@ -18,4 +19,11 @@
         <item name="android:colorBackground">@color/white</item>
         <item name="android:textColor">@color/black</item>
     </style>
+
+    <style name="AppFloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+        <!-- Thiết lập các thuộc tính của FAB -->
+        <item name="android:backgroundTint">@color/appbar</item>
+    </style>
+
+
 </resources>

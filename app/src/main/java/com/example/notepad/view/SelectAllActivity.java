@@ -1,11 +1,15 @@
 package com.example.notepad.view;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -40,19 +44,39 @@ public class SelectAllActivity extends AppCompatActivity {
       ArrayList<Note> noteArrayList ;
       IClickSelect iClickSelect ;
       DBManager databaseHandler ;
+
+     ImageView back;
+
+     TextView tvDeleteNote , tvTitle  ;
+
+    Toolbar toolbarAdd ;
+
+    SharedPreferences sharedPreferences ;
+
+    String themeStyle ;
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_all);
 
-        Toolbar toolbar = findViewById(R.id.toolbar); //Ignore red line errors
+        toolbarAdd = findViewById(R.id.toolbarAdd); //Ignore red line errors
 
-        toolbar.setNavigationIcon(R.drawable.baseline_arrow_back_24);
 
-        setSupportActionBar(toolbar);
 
         noteArrayList=new ArrayList<>();
         noteArrayList =(ArrayList) getIntent().getParcelableArrayListExtra("listData");
+
+
+        back = this.<ImageView>findViewById(R.id.backAddNote);
+
+        tvDeleteNote = this.<TextView>findViewById(R.id.tvDeleteNote);
+
+        tvTitle = this.<TextView>findViewById(R.id.tvTitle);
+
 
         iClickSelect = new IClickSelect() {
             @Override
@@ -79,69 +103,67 @@ public class SelectAllActivity extends AppCompatActivity {
             }
         };
 
-
-
-
         adapterSelect = new AdapterSelect(noteArrayList,this,iClickSelect);
+
         rcvHome = findViewById(R.id.rcvSelectAll);
 
-
         rcvHome.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
         rcvHome.setAdapter(adapterSelect);
+
         adapterSelect.notifyDataSetChanged();
 
+        back.setOnClickListener(v -> {
+            finish();
+        });
 
-    }
+
+        sharedPreferences = SelectAllActivity.this.getSharedPreferences("MyTheme", Context.MODE_PRIVATE);
 
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        themeStyle = sharedPreferences.getString("theme_system", "Default");
 
-        int id = item.getItemId();
-
-        if(id == R.id.nav_deletenote)
+        if(themeStyle.equals("Solarized"))
         {
+//          constraintLayout.setBackgroundColor(getResources().getColor(R.color.themeSolari));
+            toolbarAdd.setBackgroundColor(getResources().getColor(R.color.themeSolari));
+            tvDeleteNote.setTextColor(getResources().getColor(R.color.colorTextSolari));
+            tvTitle.setTextColor(getResources().getColor(R.color.colorTextSolari));
+//          tvSave.setTextColor(getResources().getColor(R.color.colorTextSolari));
+
+        }else  {
+
+             toolbarAdd.setBackgroundColor(getResources().getColor(R.color.appbar));
+//           constraintLayout.setBackgroundColor(getResources().getColor(R.color.themeSolari2));
+             tvDeleteNote.setTextColor(getResources().getColor(R.color.white));
+             tvTitle.setTextColor(getResources().getColor(R.color.white));
+//           tvSave.setTextColor(getResources().getColor(R.color.white));
+
+        }
+
+
+        // click delete
+
+        tvDeleteNote.setOnClickListener(v -> {
             databaseHandler = new DBManager(this);
             databaseHandler.open();
             ArrayList<String> strings = new ArrayList<>();
-
             for (Note note: noteArrayList)
             {
-                 if(note.getCheckSelect())
-                 {
-                     strings.add(String.valueOf(note.getIdNote()));
-                 }
+                if(note.getCheckSelect())
+                {
+                    strings.add(String.valueOf(note.getIdNote()));
+                }
             }
-
             //delete note duoc pick
             databaseHandler.deleteNode(strings);
-
             // tra ve mang moi
             Intent intent = new Intent();
             intent.putExtra("delete","success");
             setResult(RESULT_OK,intent);
+            Toast.makeText(this, "Xóa thành công !", Toast.LENGTH_SHORT).show();
             finish();
-
-
-
-
-        }else if(id == R.id.nav_export_select)
-        {
-            Toast.makeText(this, "Export notes to text files", Toast.LENGTH_SHORT).show();
-
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        getMenuInflater().inflate(R.menu.menu_delete,menu);
-        getMenuInflater().inflate(R.menu.menu_option_select,menu);
-
-
-        return super.onCreateOptionsMenu(menu);
+        });
     }
 
 

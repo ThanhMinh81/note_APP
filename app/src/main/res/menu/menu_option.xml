@@ -7,6 +7,11 @@
         <item
             android:id="@+id/nav_select"
             android:title="Select all notes" />
+
+        <item
+            android:id="@+id/sort_menu"
+            android:title="Sort" />
+
         <item
             android:id="@+id/nav_import"
             android:title="Import text files" />
