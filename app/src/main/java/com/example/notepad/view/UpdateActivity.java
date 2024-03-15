@@ -29,6 +29,7 @@ import com.example.notepad.Model.Note;
 import com.example.notepad.Model.Selected;
 import com.example.notepad.ViewModel.DataViewModel;
 import com.example.notepad.ViewModel.MyViewModelFactory;
+import com.example.notepad.ViewModel.UpdateSpanViewModel;
 import com.example.notepad.ViewModel.UpdateViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -42,6 +43,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
+import android.text.style.CharacterStyle;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
@@ -88,6 +90,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Formattable;
+import java.util.List;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 
@@ -104,7 +107,7 @@ public class UpdateActivity extends AppCompatActivity {
     int DefaultColor;
 
     // cai nay la mau cua background color
-    int bgColorText  =   Color.parseColor("#FFFFFF") ;
+    int bgColorText  ;
 
     LinearLayout linearLayout;
 
@@ -229,7 +232,6 @@ public class UpdateActivity extends AppCompatActivity {
                     spannableStringBuilder.setSpan(new UnderlineSpan(), 0, format1.length(), 0);
                     edContent.setText(spannableStringBuilder);
                 } else if (selected.getIndex().equals("Strike")) {
-
                     spannableStringBuilder.setSpan(strikethroughSpan, 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     edContent.setText(spannableStringBuilder);
                 } else if (selected.getIndex().equals("BgColorText")) {
@@ -296,13 +298,15 @@ public class UpdateActivity extends AppCompatActivity {
                 colorText = Color.parseColor(noteData.getStyleTextColor());
             }
 
+            Log.d("kiemtradulieu", colorText + " ");
+
             edTitle.setText(noteData.getTitle());
 
             edContent.setText(noteData.getContent());
 
             format1 = edContent.getText().toString();
             spannableString1 = new SpannableString(format1);
-            Log.d("kiemtradulieu", format1.toString());
+
 
             ForegroundColorSpan colorSpan1 = new ForegroundColorSpan(colorText);
 
@@ -395,16 +399,23 @@ public class UpdateActivity extends AppCompatActivity {
 
                    Log.d("656565",Integer.parseInt(noteData.getBackgroundColorText()) + " ");
 
+                   String hexColor = String.format("#%06X", (0xFFFFFF & Integer.parseInt(noteData.getBackgroundColorText())));
 
-//                   String hexColor = String.format("#%06X", (0xFFFFFF & Integer.parseInt(noteData.getBackgroundColorText())));
 
-                   // ma mau no la -32423 nen chuyen no ve #3232FS
-//                   cbBgColor.setBackground(getDrawable(R.drawable.checkbox_formmated));
-//                   cbBgColor.setChecked(true);
-//                   BackgroundColorSpan backgroundColorSpan = new BackgroundColorSpan(Color.parseColor(hexColor));
 
-//                   Log.d("656565",noteData.getBackgroundColorText());
-//                   edContent.setText(spannableStringBuilder);
+//                    ma mau no la -32423 nen chuyen no ve #3232FS
+
+                   cbBgColor.setBackground(getDrawable(R.drawable.checkbox_formmated));
+
+                   cbBgColor.setChecked(true);
+
+                   spannableStringBuilder.setSpan(new BackgroundColorSpan(Color.parseColor(hexColor)), 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                   edContent.setText(spannableStringBuilder);
+
+                   bgColorText = Integer.parseInt(noteData.getBackgroundColorText()) ;
+
+
 
                }
 
@@ -426,7 +437,7 @@ public class UpdateActivity extends AppCompatActivity {
             ForegroundColorSpan colorSpan1 = new ForegroundColorSpan(colorText);
             spannableStringBuilder.setSpan(colorSpan1, 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-             checkSelect();
+            checkSelect();
 
 
         }
@@ -434,6 +445,7 @@ public class UpdateActivity extends AppCompatActivity {
     }
 
     private void checkSelect() {
+
 
         if (cbBold.isChecked()) {
             spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -443,12 +455,11 @@ public class UpdateActivity extends AppCompatActivity {
             spannableStringBuilder.setSpan(new StyleSpan(Typeface.ITALIC), 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         }
+
         if (cbUnderline.isChecked()) {
             spannableStringBuilder.setSpan(new UnderlineSpan(), 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
         }
 
-        //
         //lay mau cho text
 
         if (cbColorText.isChecked()) {
@@ -462,10 +473,47 @@ public class UpdateActivity extends AppCompatActivity {
             spannableStringBuilder.setSpan(strikethroughSpan, 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 
+
+
+
+        edContent.addTextChangedListener(new TextWatcher() {
+            private boolean isBold = false;
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                ForegroundColorSpan colorSpan1 = new ForegroundColorSpan(colorText);
+                spannableStringBuilder.replace(0, format1.length(), s.toString());
+                format1 = s.toString();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // ban dau la  false
+
+                if (!isBold) {
+                    isBold = true;
+                    Log.d("fdsaoifasho","ẻarfsadfsaf");
+                    edContent.setText(spannableStringBuilder);
+                    // chuyen con tro ve cuoi doan editext
+                    edContent.setSelection(format1.length());
+                } else {
+                    isBold = false;
+                }
+            }
+        });
+    }
+
+
+    private void checkSelectedForAdd()
+    {
+
+        UpdateSpanViewModel updateSpan = new UpdateSpanViewModel();
+
         edContent.addTextChangedListener(new TextWatcher() {
 
             private boolean isBold = false;
-
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -474,6 +522,52 @@ public class UpdateActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
+                ForegroundColorSpan colorSpan1 = new ForegroundColorSpan(colorText);
+                spannableStringBuilder.replace(0, format1.length(), s.toString());
+
+                format1 = s.toString();
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // ban dau la  false
+
+                if (!isBold) {
+                    isBold = true;
+                    Log.d("fdsaoifasho","ẻarfsadfsaf");
+                    edContent.setText(spannableStringBuilder);
+                    // chuyen con tro ve cuoi doan editext
+                    edContent.setSelection(format1.length());
+                } else {
+                    isBold = false;
+                }
+            }
+        });
+
+        updateSpan.getTypeSetSpan().observe(this, s -> {
+
+            if(s.equals("Bold"))
+            {
+                spannableStringBuilder.setSpan(new StyleSpan(Integer.parseInt("1")), 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+
+        });
+
+        cbBold.setOnClickListener(v -> {
+            updateSpan.setTypeSetSpan("Bold");
+        });
+
+        edContent.addTextChangedListener(new TextWatcher() {
+
+            private boolean isBold = false;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
 
                 ForegroundColorSpan colorSpan1 = new ForegroundColorSpan(colorText);
                 spannableStringBuilder.replace(0, format1.length(), s.toString());
@@ -487,6 +581,7 @@ public class UpdateActivity extends AppCompatActivity {
 
                 if (!isBold) {
                     isBold = true;
+                    Log.d("fdsaoifasho","ẻarfsadfsaf");
                     edContent.setText(spannableStringBuilder);
                     // chuyen con tro ve cuoi doan editext
                     edContent.setSelection(format1.length());
@@ -495,7 +590,9 @@ public class UpdateActivity extends AppCompatActivity {
                 }
             }
         });
+
     }
+
 
     private void applyTextStyle(String text) {
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(text);
@@ -603,7 +700,6 @@ public class UpdateActivity extends AppCompatActivity {
                     @Override
                     public void onOk(AmbilWarnaDialog ambilWarnaDialog, int color) {
                         String hexColor = String.format("#%06X", (0xFFFFFF & color));
-
                         // Color.parseColor de chuyen tu color string sang color int
                         bgColorText = Color.parseColor(hexColor);
                         cbBgColor.setBackground(getDrawable(R.drawable.checkbox_formmated));
@@ -619,6 +715,7 @@ public class UpdateActivity extends AppCompatActivity {
                 });
                 ambilWarnaDialog.show();
             } else {
+                bgColorText = Color.parseColor("#FFFFFF");
                 cbBgColor.setBackground(getDrawable(R.drawable.checkbox_formmated));
                 cbBgColor.setChecked(false);
                 Selected selected = new Selected("BgColorText", false);

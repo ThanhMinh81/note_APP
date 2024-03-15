@@ -120,8 +120,6 @@ public class DBManager {
             db.close();
         }else {
 
-
-
             // them du lieu vao note
             SQLiteDatabase db = dbHelper.getWritableDatabase();
             ContentValues values = new ContentValues();
@@ -146,7 +144,6 @@ public class DBManager {
                 // them thanh cong va add vao bang style
 
                 try {
-
                     SQLiteDatabase insertNoteStyle = dbHelper.getWritableDatabase();
                     ContentValues noteStyle = new ContentValues();
                     noteStyle.put(dbHelper.KEY_ID_NOTE, Integer.parseInt(String.valueOf(result)));
