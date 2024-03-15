@@ -21,15 +21,8 @@
     </style>
 
 
-
-
     <style name="IconOverflow" parent="Widget.AppCompat.ActionButton.Overflow">
         <item name="android:tint">@color/red</item>
     </style>
-
-
-
-
-
 
 </resources>

@@ -15,6 +15,9 @@ import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
+    // table : background color cho tat ca layout
+    // style : background color cho text
+
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "noteManager";
     public static final String TABLE_NOTE = "note";
@@ -23,8 +26,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String KEY_TITLE = "title";
     public static final String KEY_CONTENT = "content";
     public static final String KEY_TIME_EDIT = "timeEdit";
-    public static final String KEY_BACKGROUND = "backgroundColor";
     public static final String KEY_IDCATEGORY = "idCategory";
+
+    public static final String KEY_BACKGROUND_LAYOUT = "bglayout";
+
 
     // database version
     static final int DB_VERSION = 1;
@@ -39,9 +44,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String KEY_ITALIC = "italic";
     public static final String KEY_BOLD = "bold";
     public static final String KEY_UNDERLINE = "underline";
+
+    public static final String KEY_STRIKER = "striker";
+    public static final String KEY_BACKGROUND_TEXT = "bgTextStyle";
+
     public static final String KEY_COLOR = "color";
 
-    //     CREATE TABLE style
+    public static final String KEY_COLOR_TEXT = "backgroundColorText";
+
+    public static final String KEY_BACKGROUND  = "background" ;
+
+    //CREATE TABLE style
+
     public static final String TABLE_CATEGORY = "tbl_category";
     public static final String KEY_ID_CATEGORY = "idCategory";
     public static final String NAME_CATEGORY   = "nameCategory";
@@ -62,6 +76,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + NAME_CATEGORY + " TEXT"  + ")";
 
         sqLiteDatabase.execSQL(CREATE_CATEGORY_NOTE);
+
+        // truong hop 1 co category
+        // truong hop 2 khong co category
 
         String CREATE_NOTE_TABLE = "CREATE TABLE " + TABLE_NOTE + "("
                 + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -85,7 +102,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_COLOR + " TEXT,"
                 + KEY_ITALIC + " TEXT,"
                 + KEY_BOLD + " TEXT,"
-                +  KEY_UNDERLINE + " TEXT,"
+                + KEY_UNDERLINE + " TEXT,"
+                + KEY_BACKGROUND_TEXT + " TEXT,"
+                + KEY_STRIKER + " TEXT,"
                 + "FOREIGN KEY (" + KEY_ID_NOTE + ") REFERENCES " + TABLE_NOTE + "(" + KEY_ID + ")"
                 + ")";
 

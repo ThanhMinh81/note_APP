@@ -8,6 +8,7 @@
         <item name="titleTextColor">@color/white</item>
         <item name="actionOverflowButtonStyle">@style/IconOverflow</item>
         <item name="floatingActionButtonStyle">@style/AppFloatingActionButton</item>
+
     </style>
 
     <style name="IconOverflow" parent="Widget.AppCompat.ActionButton.Overflow">
@@ -23,6 +24,11 @@
     <style name="AppFloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
         <!-- Thiết lập các thuộc tính của FAB -->
         <item name="android:backgroundTint">@color/appbar</item>
+    </style>
+
+    <style name="CheckboxStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:background">@drawable/border_selected_formmat</item>
+        <item name="android:button">@null</item>
     </style>
 
 

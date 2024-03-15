@@ -15,6 +15,7 @@ public class Note implements Parcelable {
     String content ;
     String timeEdit ;
 
+    // caii nayyy la mauu cua ca background cua note
     String bgColors ;
 
     Boolean checkSelect = true ;
@@ -22,16 +23,24 @@ public class Note implements Parcelable {
     int idNoteStyle ;
     String styleItalic ;
     String styleBold ;
+
+    // cai nay la mau cua chu trong text trong note
     public String styleTextColor ;
     String styleUnderline ;
     String idCategory ;
 
 
+    // them 2 truong nua background va strike
+
+    // cai nay la background cua text trong note
+    String backgroundColorText ;
+    String strikerText = "false" ;
+
 
     public Note() {
     }
 
-    public Note(int idNote, String title, String content, String timeEdit, String bgColors, Boolean checkSelect, int idNoteStyle, String styleItalic, String styleBold, String styleTextColor, String styleUnderline, String idCategory) {
+    public Note(int idNote, String title, String content, String timeEdit, String bgColors, Boolean checkSelect, int idNoteStyle, String styleItalic, String styleBold, String styleTextColor, String styleUnderline, String idCategory, String backgroundColorText, String strikerText) {
         this.idNote = idNote;
         this.title = title;
         this.content = content;
@@ -44,8 +53,9 @@ public class Note implements Parcelable {
         this.styleTextColor = styleTextColor;
         this.styleUnderline = styleUnderline;
         this.idCategory = idCategory;
+        this.backgroundColorText = backgroundColorText;
+        this.strikerText = strikerText;
     }
-
 
     protected Note(Parcel in) {
         idNote = in.readInt();
@@ -61,6 +71,8 @@ public class Note implements Parcelable {
         styleTextColor = in.readString();
         styleUnderline = in.readString();
         idCategory = in.readString();
+        backgroundColorText = in.readString();
+        strikerText = in.readString();
     }
 
     public static final Creator<Note> CREATOR = new Creator<Note>() {
@@ -160,6 +172,21 @@ public class Note implements Parcelable {
     }
 
 
+    public String getBackgroundColorText() {
+        return backgroundColorText;
+    }
+
+    public void setBackgroundColorText(String backgroundColorText) {
+        this.backgroundColorText = backgroundColorText;
+    }
+
+    public String getStrike() {
+        return strikerText;
+    }
+
+    public void setStrike(String strike) {
+        this.strikerText = strike;
+    }
 
     public void setBgColors(String bgColors) {
         this.bgColors = bgColors;
@@ -185,6 +212,8 @@ public class Note implements Parcelable {
         parcel.writeString(styleTextColor);
         parcel.writeString(styleUnderline);
         parcel.writeString(idCategory);
+        parcel.writeString(backgroundColorText);
+        parcel.writeString(strikerText);
     }
 
     public int getIdNoteStyle() {
@@ -193,5 +222,26 @@ public class Note implements Parcelable {
 
     public void setIdNoteStyle(int idNoteStyle) {
         this.idNoteStyle = idNoteStyle;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Note{" +
+                "idNote=" + idNote +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", timeEdit='" + timeEdit + '\'' +
+                ", bgColors='" + bgColors + '\'' +
+                ", checkSelect=" + checkSelect +
+                ", idNoteStyle=" + idNoteStyle +
+                ", styleItalic='" + styleItalic + '\'' +
+                ", styleBold='" + styleBold + '\'' +
+                ", styleTextColor='" + styleTextColor + '\'' +
+                ", styleUnderline='" + styleUnderline + '\'' +
+                ", idCategory='" + idCategory + '\'' +
+                ", backgroundColor='" + backgroundColorText + '\'' +
+                ", strike='" + strikerText + '\'' +
+                '}';
     }
 }

@@ -7,7 +7,7 @@
 
     <item
         android:id="@+id/item_search"
-        android:icon="@drawable/icons8search64"
+        android:icon="@drawable/ic_search"
         myapp:showAsAction="ifRoom|collapseActionView"
         android:title="TODO"
         myapp:actionViewClass="androidx.appcompat.widget.SearchView" />

@@ -71,44 +71,100 @@ public class DBManager {
 
     public void addNote(Note note) {
 
-        // them du lieu vao note
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(dbHelper.KEY_TITLE, note.getTitle());
-        values.put(dbHelper.KEY_CONTENT, note.getContent());
-        values.put(dbHelper.KEY_TIME_EDIT, note.getTimeEdit());
-        values.put(dbHelper.KEY_BACKGROUND, note.getBgColors());
 
-        // tra ve -1 neu insert khong thanh cong
-        // neu thành công trả về last id
+        // neu id category bang null
+        // thi khong them no vao table category
+        // cai nay khong can thiet phai them vaoo category
 
-        long result = db.insert(dbHelper.TABLE_NOTE, null, values);
+        if(note.getIdCategory() == null)
+        {
+            // them du lieu vao note
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(dbHelper.KEY_TITLE, note.getTitle());
+            values.put(dbHelper.KEY_CONTENT, note.getContent());
+            values.put(dbHelper.KEY_TIME_EDIT, note.getTimeEdit());
 
 
-        if (result == -1) {
+            // cai nay la background cho tat ca layout update ,add gi do
 
-        } else {
-            // them thanh cong va add vao bang style
+            values.put(dbHelper.KEY_BACKGROUND, note.getBgColors());
 
-            try {
+            // tra ve -1 neu insert khong thanh cong
+            // neu thành công trả về last id
 
-                SQLiteDatabase insertNoteStyle = dbHelper.getWritableDatabase();
-                ContentValues noteStyle = new ContentValues();
-                noteStyle.put(dbHelper.KEY_ID_NOTE, Integer.parseInt(String.valueOf(result)));
-                noteStyle.put(dbHelper.KEY_ITALIC, note.getStyleItalic());
-                noteStyle.put(dbHelper.KEY_BOLD, note.getStyleBold());
-                noteStyle.put(dbHelper.KEY_UNDERLINE, note.getStyleUnderline());
-                noteStyle.put(dbHelper.KEY_COLOR, note.getStyleTextColor());
-                long result2 = insertNoteStyle.insert(dbHelper.TABLE_STYLE, null, noteStyle);
-//            Log.d("kemtraduleuinsert",result2 + " " );
+            long result = db.insert(dbHelper.TABLE_NOTE, null, values);
 
-            } catch (Exception e) {
 
+            if (result == -1) {
+
+            } else {
+                // them thanh cong va add vao bang style
+
+                try {
+
+                    SQLiteDatabase insertNoteStyle = dbHelper.getWritableDatabase();
+                    ContentValues noteStyle = new ContentValues();
+                    noteStyle.put(dbHelper.KEY_ID_NOTE, Integer.parseInt(String.valueOf(result)));
+                    noteStyle.put(dbHelper.KEY_COLOR, note.getStyleTextColor());
+                    noteStyle.put(dbHelper.KEY_ITALIC, note.getStyleItalic());
+                    noteStyle.put(dbHelper.KEY_BOLD, note.getStyleBold());
+                    noteStyle.put(dbHelper.KEY_UNDERLINE, note.getStyleUnderline());
+                    noteStyle.put(dbHelper.KEY_BACKGROUND_TEXT,note.getBackgroundColorText());
+                    noteStyle.put(dbHelper.KEY_STRIKER,note.getStrike());
+                    long result2 = insertNoteStyle.insert(dbHelper.TABLE_STYLE, null, noteStyle);
+
+                } catch (Exception e) {}
 
             }
+            db.close();
+        }else {
+
+
+
+            // them du lieu vao note
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(dbHelper.KEY_TITLE, note.getTitle());
+            values.put(dbHelper.KEY_CONTENT, note.getContent());
+            values.put(dbHelper.KEY_TIME_EDIT, note.getTimeEdit());
+
+            // cai nay la background cho tat ca layout update ,add gi do
+
+            values.put(dbHelper.KEY_BACKGROUND, note.getBgColors());
+            values.put(dbHelper.KEY_ID_CATEGORY,note.getIdCategory());
+
+            // tra ve -1 neu insert khong thanh cong
+            // neu thành công trả về last id
+
+            long result = db.insert(dbHelper.TABLE_NOTE, null, values);
+
+
+            if (result == -1) {
+
+            } else {
+                // them thanh cong va add vao bang style
+
+                try {
+
+                    SQLiteDatabase insertNoteStyle = dbHelper.getWritableDatabase();
+                    ContentValues noteStyle = new ContentValues();
+                    noteStyle.put(dbHelper.KEY_ID_NOTE, Integer.parseInt(String.valueOf(result)));
+                    noteStyle.put(dbHelper.KEY_ITALIC, note.getStyleItalic());
+                    noteStyle.put(dbHelper.KEY_BOLD, note.getStyleBold());
+                    noteStyle.put(dbHelper.KEY_UNDERLINE, note.getStyleUnderline());
+                    noteStyle.put(dbHelper.KEY_COLOR, note.getStyleTextColor());
+                    long result2 = insertNoteStyle.insert(dbHelper.TABLE_STYLE, null, noteStyle);
+
+                } catch (Exception e) {}
+
+            }
+            db.close();
+
 
         }
-        db.close();
+
+
     }
 
     public int updateNote(Note note) {
@@ -127,29 +183,28 @@ public class DBManager {
         // update vao database no da la true roi
 
         Log.d("update", note.getStyleBold() + "");
-        if (resultUpdateNote != -1)
-        {
+        if (resultUpdateNote != -1) {
 
 //             if(note.getIdNoteStyle() != 0)
 //             {
-                 // update style
+            // update style
 
-                 SQLiteDatabase db2 = dbHelper.getWritableDatabase();
-                 ContentValues values1 = new ContentValues();
+            SQLiteDatabase db2 = dbHelper.getWritableDatabase();
+            ContentValues values1 = new ContentValues();
 
-                 // truyen du cac truong du leu
-                 // bo qua truong autoincrement tu dong tang
+            // truyen du cac truong du leu
+            // bo qua truong autoincrement tu dong tang
 
-                 values1.put(dbHelper.KEY_ID_NOTE, note.getIdNote());
-                 values1.put(dbHelper.KEY_COLOR, note.getStyleTextColor());
-                 values1.put(dbHelper.KEY_ITALIC, note.getStyleItalic());
-                 values1.put(dbHelper.KEY_BOLD, note.getStyleBold());
-                 values1.put(dbHelper.KEY_UNDERLINE, note.getStyleUnderline());
+            values1.put(dbHelper.KEY_ID_NOTE, note.getIdNote());
+            values1.put(dbHelper.KEY_COLOR, note.getStyleTextColor());
+            values1.put(dbHelper.KEY_ITALIC, note.getStyleItalic());
+            values1.put(dbHelper.KEY_BOLD, note.getStyleBold());
+            values1.put(dbHelper.KEY_UNDERLINE, note.getStyleUnderline());
 
-                 update = db2.update(dbHelper.TABLE_STYLE, values1, dbHelper.KEY_ID_NOTE + " = ?",
-                         new String[]{String.valueOf(note.getIdNote())});
+            update = db2.update(dbHelper.TABLE_STYLE, values1, dbHelper.KEY_ID_NOTE + " = ?",
+                    new String[]{String.valueOf(note.getIdNote())});
 
-                 Log.d("dfasfas", update + "");
+            Log.d("dfasfas", update + "");
 //             }else {
 //
 //                 SQLiteDatabase db3 = dbHelper.getWritableDatabase();
@@ -171,7 +226,6 @@ public class DBManager {
 
 
     }
-
 
 
     public ArrayList<Note> getAllNotes() {
@@ -217,15 +271,12 @@ public class DBManager {
 
     public ArrayList<Note> getAllNoteCategory() {
         ArrayList<Note> noteList = new ArrayList<>();
-        Log.d("Fasfas","ffsaf2");
 
         try {
-
 //            String selectQuery = "SELECT  * FROM " + dbHelper.TABLE_NOTE + " FULL JOIN " + dbHelper.TABLE_STYLE + " ON "
 //                    + dbHelper.TABLE_NOTE + "." + dbHelper.KEY_ID + " = " + dbHelper.TABLE_STYLE + "." + dbHelper.KEY_ID_NOTE
 //                    + " FULL  JOIN  " + dbHelper.TABLE_CATEGORY + " ON " + dbHelper.TABLE_NOTE + "." + dbHelper.KEY_ID_CATEGORY
 //                    + " = " + dbHelper.TABLE_CATEGORY + "." + dbHelper.KEY_ID_CATEGORY;
-
             String selectQuery = "SELECT * FROM " + dbHelper.TABLE_NOTE
                     + " LEFT JOIN " + dbHelper.TABLE_STYLE
                     + " ON " + dbHelper.TABLE_NOTE + "." + dbHelper.KEY_ID
@@ -248,85 +299,63 @@ public class DBManager {
                     note.setTimeEdit(cursor.getString(3));
                     note.setBgColors(cursor.getString(4));
 
-                    if(cursor.getString(5) == null)
-                    {
+                    // lay id category
+                    if (cursor.getString(5) == null) {
                         note.setIdCategory("-1");
-                    }
-                    else {
+                    } else {
                         note.setIdCategory(cursor.getString(5));
                     }
 
-//                    if(cursor.getString(6) == null)
-//                    {
-//                       note.setIdNoteStyle(-1);
-//
-//
-//                    }
-//                    else {
-//
-//                        Log.d("tesst",note.getTitle() + " == " + note.getIdNoteStyle());
-
-                        note.setIdNoteStyle(Integer.parseInt(cursor.getString(6)));
-//                    }
-
-
-                    if(cursor.getString(8) == null)
+                    if(cursor.getString(6) == null)
                     {
+                       note.setIdNoteStyle(-1);
+
+                    }
+                    else {
+                    note.setIdNoteStyle(Integer.parseInt(cursor.getString(6)));
+                    }
+
+
+                    if (cursor.getString(8) == null) {
                         note.setStyleTextColor("#1B1A18");
-                    }else {
+                    } else {
                         note.setStyleTextColor(cursor.getString(8));
 
                     }
 
-                    if(cursor.getString(9) == null)
-                    {
+                    if (cursor.getString(9) == null) {
                         note.setStyleItalic("false");
-                    }else {
+                    } else {
                         note.setStyleItalic(cursor.getString(9));
 
                     }
 
 
-                    if(cursor.getString(10) == null)
-                    {
+                    if (cursor.getString(10) == null) {
                         note.setStyleBold("false");
-                    }else {
+                    } else {
                         note.setStyleBold(cursor.getString(10));
                     }
 
 
-                    if(cursor.getString(11) == null)
-                    {
+                    if (cursor.getString(11) == null) {
                         note.setStyleUnderline("false");
-                    }else {
+                    } else {
                         note.setStyleUnderline(cursor.getString(11));
                     }
 
-
-
-
-
-
-//              note.setStyleTextColor(cursor.getString(7));
-//              note.setStyleItalic(cursor.getString(8));
-//              note.setStyleBold(cursor.getString(9));
-//              note.setStyleUnderline(cursor.getString(10));
-
-//              note.setIdCategory(cursor.getString(11));
-
-
-
-                    if (cursor.getString(12) != null) {
-
-                        note.setIdCategory(cursor.getString(12));
+                    if (cursor.getString(12) == null) {
+                        note.setBackgroundColorText("-1");
                     } else {
-                        note.setIdCategory("fasfasdhofihasodfiash");
-
+                        note.setBackgroundColorText(cursor.getString(12));
                     }
 
-
+                    if (cursor.getString(13) == null) {
+                        note.setStrike("false");
+                    } else {
+                        note.setStrike(cursor.getString(13));
+                    }
                     noteList.add(note);
-                    Log.d("fsdfas",noteList.size() + " ");
 
                 } while (cursor.moveToNext());
             }
@@ -367,10 +396,7 @@ public class DBManager {
 
         } catch (Exception e) {
         }
-
-
         return categories;
-
     }
 
     public void addCategory(Category category) {
@@ -428,15 +454,14 @@ public class DBManager {
         db.update(dbHelper.TABLE_NOTE, values, whereClause, whereArgs);
     }
 
-    public void deleteCategoryNote(Note note,String idCategory)
-    {
+    public void deleteCategoryNote(Note note, String idCategory) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(dbHelper.KEY_IDCATEGORY, "-1"); // Thay đổi trường cần cập nhật
 
         // Xác định điều kiện WHERE để chỉ cập nhật cho một hàng cụ thể
         String whereClause = dbHelper.KEY_ID_NOTE + " = ?";
-        String[] whereArgs = { String.valueOf(note.getIdNote()) }; // Điều kiện WHERE
+        String[] whereArgs = {String.valueOf(note.getIdNote())}; // Điều kiện WHERE
 
         // Thực hiện câu lệnh cập nhật
         int rowsAffected = db.update(dbHelper.TABLE_NOTE, values, whereClause, whereArgs);
@@ -444,7 +469,7 @@ public class DBManager {
         // Kiểm tra xem có bao nhiêu hàng đã được cập nhật
         if (rowsAffected > 0) {
             // Cập nhật thành công
-            Log.d("ereg","430t30u");
+            Log.d("ereg", "430t30u");
         } else {
             // Không có hàng nào được cập nhật (ID không tồn tại)
         }
@@ -465,6 +490,7 @@ public class DBManager {
         if (cursor.moveToFirst()) {
 
             do {
+
                 Note note = new Note();
                 note.setIdNote(Integer.parseInt(cursor.getString(0)));
                 note.setTitle(cursor.getString(1));
@@ -478,6 +504,7 @@ public class DBManager {
                 note.setStyleUnderline(cursor.getString(10));
                 note.setIdCategory(cursor.getString(12));
                 Log.d("fsfas", note.getTitle() + "  " + cursor.getString(12));
+
                 if (cursor.getString(11) != null) {
 
                     note.setIdCategory(cursor.getString(11));

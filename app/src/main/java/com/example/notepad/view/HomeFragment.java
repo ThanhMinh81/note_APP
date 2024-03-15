@@ -73,9 +73,19 @@ public class HomeFragment extends Fragment {
 
 
         iClickUpdate = note -> {
+//            Intent intent = new Intent(getActivity(), UpdateActivity.class);
+//            intent.putExtra("note", note);
+//            startActivityForResult(intent, 10);
+
+
             Intent intent = new Intent(getActivity(), UpdateActivity.class);
+            intent.putExtra("checkUpdate", true);
             intent.putExtra("note", note);
             startActivityForResult(intent, 10);
+
+
+
+
         };
 
         /// xetttt mauuuuu cho bg fragment
@@ -200,12 +210,10 @@ public class HomeFragment extends Fragment {
         if (requestCode == 10) {
 
             if (data != null) {
-
                 Note note = (Note) data.getParcelableExtra("note");
-                Log.d("boldHomeFragment",note.getStyleBold());
+                Log.d("strikeHomeFragment",note.getBackgroundColorText());
                 dataViewModel.updateNote(note);
                 dataViewModel.setMutableLiveDataNote(note);
-
             }
 
         }

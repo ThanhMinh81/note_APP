@@ -51,6 +51,7 @@ import com.example.notepad.view.CategoryFragment;
 import com.example.notepad.view.HomeFragment;
 import com.example.notepad.view.SelectAllActivity;
 import com.example.notepad.view.SettingFragment;
+import com.example.notepad.view.UpdateActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
@@ -117,6 +118,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        databaseHandler.getAllNoteCategory() ;
         databaseHandler.getAllCategory();
 
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setElevation(3.0f);
+
 
         MyViewModelFactory factory = new MyViewModelFactory(databaseHandler);
 
@@ -177,10 +181,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, AddNoteActivity.class);
+//                Intent intent = new Intent(MainActivity.this, AddNoteActivity.class);
+                Intent intent = new Intent(MainActivity.this, UpdateActivity.class);
+//                intent.putExtra("checkUpdate",false);
+
 //                Bundle extras = new Bundle();
 //                extras.putBoolean("checkUpdate",false);
 //                intent.putExtras(extras);
+
                 intent.putExtra("checkUpdate", false);
 
                 startActivityForResult(intent, 10);

@@ -2,6 +2,7 @@ package com.example.notepad.view;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.notepad.Adapter.AdapterCategory;
@@ -45,6 +47,13 @@ public class CategoryFragment extends Fragment {
     Dialog dialog;
     ICategory iCategory ;
 
+    LinearLayout linearLayout ;
+
+    SharedPreferences sharedPreferences  ;
+
+    String themeSystem ;
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,6 +63,8 @@ public class CategoryFragment extends Fragment {
 
         btnAddCaterory = view.findViewById(R.id.btnAddCaterory);
         rcvCategory = view.findViewById(R.id.rcvCategory);
+
+        linearLayout = view.findViewById(R.id.layoutcategory);
 
         categoryArrayList = new ArrayList<>();
         dialog = new Dialog(getContext());
@@ -70,6 +81,19 @@ public class CategoryFragment extends Fragment {
         };
 
         adapterCategory = new AdapterCategory(getContext(),categoryArrayList, iCategory);
+
+        sharedPreferences = getActivity().getSharedPreferences("MyTheme", getContext().MODE_PRIVATE);
+
+        themeSystem = sharedPreferences.getString("MyTheme","Default");
+
+        if(themeSystem.equals("Default"))
+        {
+            linearLayout.setBackgroundColor(getResources().getColor(R.color.backgroundItem));
+        }else {
+            linearLayout.setBackgroundColor(getResources().getColor(R.color.themeSolari));
+
+        }
+
 
         LinearLayoutManager layoutManager  = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
 

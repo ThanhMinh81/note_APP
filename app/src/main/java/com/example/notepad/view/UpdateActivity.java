@@ -38,10 +38,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
@@ -98,33 +100,55 @@ public class UpdateActivity extends AppCompatActivity {
 
     Note noteData;
 
+    // cai nay color cho background
     int DefaultColor;
+
+    // cai nay la mau cua background color
+    int bgColorText  =   Color.parseColor("#FFFFFF") ;
 
     LinearLayout linearLayout;
 
-    CheckBox cbBold, cbItalic, cbUnderline, cbColorText;
+    CheckBox cbBold, cbItalic, cbUnderline, cbColorText, cbBgColor, cbStrike;
 
     UpdateViewModel updateViewModel;
 
-    DataViewModel dataViewModel ;
+    DataViewModel dataViewModel;
+
+    // mau cua hinh anhh ne
     int colorText;
 
-    String themeStyle;
+    String themeStyle = "Default";
 
-    Dialog dialog ;
+    Dialog dialog;
 
     SharedPreferences sharedPreferences;
 
     Drawable overflowIcon;
 
-    ArrayList<Category> categoryArrayList ;
+    ArrayList<Category> categoryArrayList;
 
-    String idCategory ;
+    String idCategory;
 
     IClickCategory iClickCategory;
 
+    StrikethroughSpan strikethroughSpan;
 
-   AdapterSelectCategory adapterSelectCategory ;
+
+    AdapterSelectCategory adapterSelectCategory;
+
+    Boolean checkUpdate = false;
+    String format1;
+
+    String colorTextAddNote = "";
+
+    String format2;
+    SpannableString spannableString1;
+
+    SpannableStringBuilder spannableStringBuilder;
+
+
+    SpannableString spannableString2;
+    Note note;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,37 +164,27 @@ public class UpdateActivity extends AppCompatActivity {
             finish();
         });
 
-
-
-
+        // icon de xo ra thanh menu bar
         overflowIcon = toolbar.getNavigationIcon();
 
-        updateViewModel = new UpdateViewModel();
+        Intent intent = getIntent();
+        checkUpdate = intent.getBooleanExtra("checkUpdate", false);
+        Log.d("fsffasf", checkUpdate + " ");
 
         databaseHandler = new DBManager(this);
-        databaseHandler.open();
 
-        iClickCategory = new IClickCategory() {
-            @Override
-            public void click(String id) {
-                 idCategory = id ;
-            }
-        };
+        databaseHandler.open();
 
         edTitle = findViewById(R.id.edTitleNote);
         edContent = findViewById(R.id.edContentNote);
         linearLayout = this.<LinearLayout>findViewById(R.id.layoutUpdateNote);
 
-
         MyViewModelFactory factory = new MyViewModelFactory(databaseHandler);
-        dataViewModel = new ViewModelProvider(this,factory).get(DataViewModel.class);
+        dataViewModel = new ViewModelProvider(this, factory).get(DataViewModel.class);
 
+        categoryArrayList = new ArrayList<>();
 
-
-
-        categoryArrayList  = new ArrayList<>();
-
-        adapterSelectCategory = new AdapterSelectCategory(categoryArrayList ,iClickCategory);
+        adapterSelectCategory = new AdapterSelectCategory(categoryArrayList, iClickCategory);
 
         dataViewModel.getAllListCategory();
 
@@ -183,188 +197,480 @@ public class UpdateActivity extends AppCompatActivity {
             }
         });
 
-
-        checkBoxSelect();
-
-
-        dialog = new Dialog(UpdateActivity.this);
-
-        noteData = getIntent().getExtras().getParcelable("note");
-
-        if (noteData.getStyleTextColor() != null) {
-            Log.d("fsfas",noteData.getStyleTextColor());
-
-            if(noteData.getStyleTextColor().equals("#1B1A18"))
-            {
-                colorText = getResources().getColor(R.color.black);
-            }else {
-
-
-                colorText = Color.parseColor(noteData.getStyleTextColor());
-
-//                colorText = getResources().getColor(Integer.parseInt(noteData.getStyleTextColor()));
-
-            }
-
-            colorText = Color.parseColor(noteData.getStyleTextColor());
-        }
-
-
-
-
-
-        Log.d("FsfasDay la font ne", noteData.getStyleTextColor() + "");
-
-        edTitle.setText(noteData.getTitle());
-
-        edContent.setText(noteData.getContent());
-
-        // check mau cho bg color
-        if (noteData.getBgColors().trim().length() > 0) {
-            DefaultColor = Color.parseColor(noteData.getBgColors());
-        } else {
-            DefaultColor = Color.parseColor(String.valueOf(R.color.backgroundItem));
-        }
-
-        sharedPreferences = UpdateActivity.this.getSharedPreferences("MyTheme", Context.MODE_PRIVATE);
-
+        sharedPreferences = UpdateActivity.this.getSharedPreferences(" ", Context.MODE_PRIVATE);
 
         themeStyle = sharedPreferences.getString("theme_system", "Default");
 
+        // lay dai mau mo do cho add
+        DefaultColor = R.color.backgroundItem;
 
-        Drawable myIcon = AppCompatResources.getDrawable(this, R.drawable.layout_update_note);
+        updateViewModel = new UpdateViewModel();
 
-        String format1 = edContent.getText().toString();
-        SpannableString spannableString1 = new SpannableString(format1);
+        colorText = getColor(R.color.black);
 
-        ForegroundColorSpan colorSpan1 = new ForegroundColorSpan(colorText);
+        dialog = new Dialog(UpdateActivity.this);
 
-        spannableString1.setSpan(colorSpan1, 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        edContent.setText(spannableString1);
+        // ban dau la color mau trong suot
+        bgColorText = Color.parseColor("#FFFFFF");
 
-
-//        if (!noteData.getStyleTextColor().equals("null")) {
-
-            if (!noteData.getStyleTextColor().equals("#1B1A18")) {
-                cbColorText.setChecked(true);
-            }
-//        }
-
-
-//        if (!noteData.getStyleBold().equals("null")) {
-            if (noteData.getStyleBold().equals("true")) {
-                cbBold.setChecked(true);
-
-                spannableString1.setSpan(new StyleSpan(Integer.parseInt("1")), 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                edContent.setText(spannableString1);
-
-            }
-//        }
-
-//        if (!noteData.getStyleItalic().equals("null")) {
-            if (noteData.getStyleItalic().equals("true")) {
-
-                cbItalic.setChecked(true);
-                spannableString1.setSpan(new StyleSpan(Integer.parseInt("2")), 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                edContent.setText(spannableString1);
-
-            }
-//        }
-//        if (!noteData.getStyleUnderline().equals("null")) {
-            if (noteData.getStyleUnderline().equals("true")) {
-                cbUnderline.setChecked(true);
-                spannableString1.setSpan(new UnderlineSpan(), 0, format1.length(), 0);
-                edContent.setText(spannableString1);
-
-            }
-//        }
-
-
-//        if (!noteData.getBgColors().equals("null")) {
-            // khac mau
-            if (noteData.getBgColors().equals("#FCFACA")) {
-
-                if (themeStyle.equals("Solarized")) {
-                    ColorFilter filter = new LightingColorFilter(Color.parseColor("#FCF6E0"), Color.parseColor("#FCF6E0"));
-
-                    myIcon.setColorFilter(filter);
-
-                    linearLayout.setBackground(myIcon);
-                } else if (themeStyle.equals("Default")) {
-                    ColorFilter filter = new LightingColorFilter(Color.parseColor(noteData.getBgColors()), Color.parseColor(noteData.getBgColors()));
-
-                    myIcon.setColorFilter(filter);
-
-                    linearLayout.setBackground(myIcon);
-                }
-
-            } else {
-                ColorFilter filter = new LightingColorFilter(Color.parseColor(noteData.getBgColors()), Color.parseColor(noteData.getBgColors()));
-
-                myIcon.setColorFilter(filter);
-
-                linearLayout.setBackground(myIcon);
-            }
-//        }
-
-
-        // 1bold
-        // 2 italic
+        checkBoxSelect();
+        strikethroughSpan = new StrikethroughSpan();
 
         updateViewModel.getMutableLiveData().observe(this, selected -> {
 
             if (selected.isCheck()) {
-
                 if (selected.getIndex().contains("#")) {
                     // set Color
                     ForegroundColorSpan colorSpan = new ForegroundColorSpan(Color.parseColor(selected.getIndex()));
-                    spannableString1.setSpan(colorSpan, 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    edContent.setText(spannableString1);
+                    spannableStringBuilder.setSpan(colorSpan, 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    edContent.setText(spannableStringBuilder);
                 } else if (selected.getIndex().equals("Under")) {
                     // set Underline
-                    spannableString1.setSpan(new UnderlineSpan(), 0, format1.length(), 0);
-                    edContent.setText(spannableString1);
-                } else {
-                    spannableString1.setSpan(new StyleSpan(Integer.parseInt(selected.getIndex())), 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    edContent.setText(spannableString1);
-                }
-            } else {
+                    spannableStringBuilder.setSpan(new UnderlineSpan(), 0, format1.length(), 0);
+                    edContent.setText(spannableStringBuilder);
+                } else if (selected.getIndex().equals("Strike")) {
 
-                StyleSpan[] styleSpans = spannableString1.getSpans(0, format1.length(), StyleSpan.class);
+                    spannableStringBuilder.setSpan(strikethroughSpan, 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    edContent.setText(spannableStringBuilder);
+                } else if (selected.getIndex().equals("BgColorText")) {
+                    // Tạo một BackgroundColorSpan với màu nền mong muốn (ví dụ: màu vàng)
+                    String hexColor = String.format("#%06X", (0xFFFFFF & Integer.parseInt(selected.getValue())));
+                    BackgroundColorSpan backgroundColorSpan = new BackgroundColorSpan(Color.parseColor(hexColor));
+                    spannableStringBuilder.setSpan(backgroundColorSpan, 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    edContent.setText(spannableStringBuilder);
+                } else {
+                    // cai nay xet text
+                    spannableStringBuilder.setSpan(new StyleSpan(Integer.parseInt(selected.getIndex())), 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    edContent.setText(spannableStringBuilder);
+                }
+            }
+            else
+            {
+                StyleSpan[] styleSpans = spannableStringBuilder.getSpans(0, format1.length(), StyleSpan.class);
 
                 if (selected.getIndex().equals("Black")) {
                     Log.d("kiemtraduleu", "sasfdf");
                     ForegroundColorSpan colorSpan = new ForegroundColorSpan(getColor(R.color.black));
-                    // xet lai mau den cho text
                     colorText = getColor(R.color.black);
-                    spannableString1.setSpan(colorSpan, 0, spannableString1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannableStringBuilder.setSpan(colorSpan, 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
 
-                for (StyleSpan styleSpan : styleSpans) {
+                if (selected.getIndex().equals("BgColorText")) {
+                    BackgroundColorSpan backgroundColorSpan = new BackgroundColorSpan(Color.parseColor("#00000000"));
+                    spannableStringBuilder.setSpan(backgroundColorSpan, 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+
+                if (selected.getIndex().equals("Strike")) {
+                    spannableStringBuilder.removeSpan(strikethroughSpan);
+                }
+
+                for (StyleSpan styleSpan : styleSpans)
+                {
                     if (selected.getIndex().equals("Under")) {
-                        spannableString1.removeSpan((new UnderlineSpan()));
-                    } else if (!selected.getIndex().equals("Black")) {
+                        spannableStringBuilder.removeSpan((new UnderlineSpan()));
+                    } else if (!selected.getIndex().equals("Black")
+                            && !selected.getIndex().equals("BgColorText")
+                            && !selected.getIndex().equals("Strike")) {
                         if (styleSpan.getStyle() == Integer.parseInt(selected.getIndex())) {
-                            spannableString1.removeSpan(styleSpan);
+                            Log.d(" xoaaa ", styleSpan.getStyle() + " ");
+                            spannableStringBuilder.removeSpan(styleSpan);
                         }
                     }
                 }
 
-                edContent.setText(spannableString1);
+                edContent.setText(spannableStringBuilder);
+            }
+
+        });
+
+        if (checkUpdate) {
+
+            noteData = getIntent().getExtras().getParcelable("note");
+
+            if (noteData.getStyleTextColor() != null) {
+                if (noteData.getStyleTextColor().equals("#1B1A18")) {
+                    colorText = getResources().getColor(R.color.black);
+                } else {
+                    colorText = Color.parseColor(noteData.getStyleTextColor());
+                }
+                colorText = Color.parseColor(noteData.getStyleTextColor());
+            }
+
+            edTitle.setText(noteData.getTitle());
+
+            edContent.setText(noteData.getContent());
+
+            format1 = edContent.getText().toString();
+            spannableString1 = new SpannableString(format1);
+            Log.d("kiemtradulieu", format1.toString());
+
+            ForegroundColorSpan colorSpan1 = new ForegroundColorSpan(colorText);
+
+            spannableString1.setSpan(colorSpan1, 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            spannableStringBuilder = new SpannableStringBuilder(format1);
+
+            spannableStringBuilder.setSpan(colorSpan1, 0, format1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // dinh dang mau cho text ne
+
+            // ontextchang
+
+
+            iClickCategory = new IClickCategory() {
+                @Override
+                public void click(String id) {
+                    idCategory = id;
+                }
+            };
+
+            // check mau cho bg color
+            if (noteData.getBgColors().trim().length() > 0) {
+                DefaultColor = Color.parseColor(noteData.getBgColors());
+            } else {
+                DefaultColor = Color.parseColor(String.valueOf(R.color.backgroundItem));
+            }
+
+            Drawable myIcon = AppCompatResources.getDrawable(this, R.drawable.layout_update_note);
+
+            // khac mau mac dinh thi check
+            if (!noteData.getStyleTextColor().equals("#1B1A18")) {
+                cbColorText.setChecked(true);
+            }
+
+            if (noteData.getStyleBold().equals("true")) {
+
+                cbBold.setBackground(getDrawable(R.drawable.checkbox_formmated));
+                cbBold.setChecked(true);
+                spannableStringBuilder.setSpan(new StyleSpan(Integer.parseInt("1")), 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                edContent.setText(spannableStringBuilder);
+
+            } else {
+                cbBold.setBackground(getDrawable(R.drawable.checkbox_formmated));
+                cbBold.setChecked(false);
+            }
+
+
+            if (noteData.getStyleItalic().equals("true")) {
+                Log.d("lieiee", "idfsadfa");
+                cbItalic.setBackground(getDrawable(R.drawable.checkbox_formmated));
+                cbItalic.setChecked(true);
+                spannableStringBuilder.setSpan(new StyleSpan(Integer.parseInt("2")), 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                edContent.setText(spannableStringBuilder);
+            } else {
+                cbItalic.setBackground(getDrawable(R.drawable.checkbox_formmated));
+                cbItalic.setChecked(false);
+            }
+
+            if (noteData.getStyleUnderline().equals("true")) {
+                cbUnderline.setBackground(getDrawable(R.drawable.checkbox_formmated));
+                cbUnderline.setChecked(true);
+                spannableStringBuilder.setSpan(new UnderlineSpan(), 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                edContent.setText(spannableStringBuilder);
+            }
+
+            if (!noteData.getStyleTextColor().equals("#1B1A18")) {
+
+                cbColorText.setBackground(getDrawable(R.drawable.checkbox_formmated));
+                cbColorText.setChecked(true);
+                spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor(noteData.getStyleTextColor())), 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                edContent.setText(spannableStringBuilder);
+            }
+
+
+               if(noteData.getStrike().equals("true"))
+               {
+                   // khong hieu sao nhung bat buoc phai co dong nay moi duoc
+                   cbStrike.setBackground(getDrawable(R.drawable.checkbox_formmated));
+                   cbStrike.setChecked(true);
+                   spannableStringBuilder.setSpan(strikethroughSpan, 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                   edContent.setText(spannableStringBuilder);
+               }
+
+
+
+
+               if(!noteData.getBackgroundColorText().equals("-1"))
+               {
+
+                   Log.d("656565",Integer.parseInt(noteData.getBackgroundColorText()) + " ");
+
+
+//                   String hexColor = String.format("#%06X", (0xFFFFFF & Integer.parseInt(noteData.getBackgroundColorText())));
+
+                   // ma mau no la -32423 nen chuyen no ve #3232FS
+//                   cbBgColor.setBackground(getDrawable(R.drawable.checkbox_formmated));
+//                   cbBgColor.setChecked(true);
+//                   BackgroundColorSpan backgroundColorSpan = new BackgroundColorSpan(Color.parseColor(hexColor));
+
+//                   Log.d("656565",noteData.getBackgroundColorText());
+//                   edContent.setText(spannableStringBuilder);
+
+               }
+
+               if( noteData.getBgColors() != null)
+               {
+                   linearLayout.setBackgroundColor(Color.parseColor(noteData.getBgColors()));
+               }
+
+
+
+           checkSelect();
+
+
+        } else {
+
+            format1 = edContent.getText().toString();
+            spannableStringBuilder = new SpannableStringBuilder(format1);
+            Log.d("kiemtradulieu", format1.toString());
+            ForegroundColorSpan colorSpan1 = new ForegroundColorSpan(colorText);
+            spannableStringBuilder.setSpan(colorSpan1, 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+             checkSelect();
+
+
+        }
+
+    }
+
+    private void checkSelect() {
+
+        if (cbBold.isChecked()) {
+            spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        if (cbItalic.isChecked()) {
+            spannableStringBuilder.setSpan(new StyleSpan(Typeface.ITALIC), 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        }
+        if (cbUnderline.isChecked()) {
+            spannableStringBuilder.setSpan(new UnderlineSpan(), 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        }
+
+        //
+        //lay mau cho text
+
+        if (cbColorText.isChecked()) {
+            // Chuyển đổi mã màu từ dạng hex sang giá trị integer và xét màu cho span
+            // xet mau kieu Int cho span ne
+            spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor(noteData.getStyleTextColor())), 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        }
+
+        if (cbStrike.isChecked()) {
+            spannableStringBuilder.setSpan(strikethroughSpan, 0, format1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        edContent.addTextChangedListener(new TextWatcher() {
+
+            private boolean isBold = false;
+
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+
+                ForegroundColorSpan colorSpan1 = new ForegroundColorSpan(colorText);
+                spannableStringBuilder.replace(0, format1.length(), s.toString());
+                format1 = s.toString();
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // ban dau la  false
+
+                if (!isBold) {
+                    isBold = true;
+                    edContent.setText(spannableStringBuilder);
+                    // chuyen con tro ve cuoi doan editext
+                    edContent.setSelection(format1.length());
+                } else {
+                    isBold = false;
+                }
+            }
+        });
+    }
+
+    private void applyTextStyle(String text) {
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(text);
+
+        // Áp dụng kiểu chữ in đậm nếu checkbox Bold được chọn
+        if (cbBold.isChecked()) {
+            spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), 0, text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        // Áp dụng kiểu chữ nghiêng nếu checkbox Italic được chọn
+        if (cbItalic.isChecked()) {
+            spannableStringBuilder.setSpan(new StyleSpan(Typeface.ITALIC), 0, text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        // Cập nhật văn bản của EditText
+        edContent.setText(spannableStringBuilder);
+    }
+
+    private void checkBoxSelect() {
+        cbBold = findViewById(R.id.cbBold);
+        cbItalic = findViewById(R.id.cbItalic);
+        cbUnderline = findViewById(R.id.cbUnderline);
+        cbColorText = findViewById(R.id.cbColorText);
+        cbBgColor = findViewById(R.id.cbBgColor);
+        cbStrike = findViewById(R.id.cbStrike);
+        cbBold.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CheckBox checkBox = (CheckBox) view;
+
+                if (checkBox.isChecked()) {
+                    cbBold.setBackground(getDrawable(R.drawable.checkbox_formmated));
+                    cbBold.setChecked(true);
+                    Selected selected = new Selected("1", true);
+                    updateViewModel.setMutableLiveData(selected);
+                } else {
+                    cbBold.setBackground(getDrawable(R.drawable.checkbox_formmated));
+                    cbBold.setChecked(false);
+                    Selected selected = new Selected("1", false);
+                    updateViewModel.setMutableLiveData(selected);
+                }
+
+            }
+        });
+        cbItalic.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CheckBox checkBox = (CheckBox) view;
+
+                if (checkBox.isChecked()) {
+                    cbItalic.setBackground(getDrawable(R.drawable.checkbox_formmated));
+                    cbItalic.setChecked(true);
+                    Selected selected = new Selected("2", true);
+                    updateViewModel.setMutableLiveData(selected);
+                } else {
+                    cbItalic.setChecked(false);
+                    Selected selected = new Selected("2", false);
+                    updateViewModel.setMutableLiveData(selected);
+                }
+
+            }
+        });
+        cbUnderline.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CheckBox checkBox = (CheckBox) view;
+                if (checkBox.isChecked()) {
+                    cbUnderline.setBackground(getDrawable(R.drawable.checkbox_formmated));
+                    cbUnderline.setChecked(true);
+                    Selected selected = new Selected("Under", true);
+                    updateViewModel.setMutableLiveData(selected);
+                } else {
+                    cbUnderline.setChecked(false);
+                    Selected selected = new Selected("Under", false);
+                    updateViewModel.setMutableLiveData(selected);
+                }
 
             }
         });
 
+        cbStrike.setOnClickListener(view -> {
 
+            CheckBox checkBox = (CheckBox) view;
+            if (checkBox.isChecked()) {
+                cbStrike.setBackground(getDrawable(R.drawable.checkbox_formmated));
+                cbStrike.setChecked(true);
+                Selected selected = new Selected("Strike", true);
+                updateViewModel.setMutableLiveData(selected);
+            } else {
+                cbStrike.setBackground(getDrawable(R.drawable.checkbox_formmated));
+                cbStrike.setChecked(false);
+                Selected selected = new Selected("Strike", false);
+                updateViewModel.setMutableLiveData(selected);
+            }
+        });
+
+        cbBgColor.setOnClickListener(view -> {
+
+            CheckBox checkBox = (CheckBox) view;
+
+            if (checkBox.isChecked()) {
+
+                Log.d("fsfdafaaaa", "saa");
+                AmbilWarnaDialog ambilWarnaDialog = new AmbilWarnaDialog(UpdateActivity.this, colorText, true, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                    @Override
+                    public void onOk(AmbilWarnaDialog ambilWarnaDialog, int color) {
+                        String hexColor = String.format("#%06X", (0xFFFFFF & color));
+
+                        // Color.parseColor de chuyen tu color string sang color int
+                        bgColorText = Color.parseColor(hexColor);
+                        cbBgColor.setBackground(getDrawable(R.drawable.checkbox_formmated));
+                        cbBgColor.setChecked(true);
+                        Log.d("fsdfasfafs", String.valueOf(bgColorText) + " ");
+                        Selected selected = new Selected("BgColorText", String.valueOf(bgColorText), true);
+                        updateViewModel.setMutableLiveData(selected);
+                    }
+
+                    @Override
+                    public void onCancel(AmbilWarnaDialog ambilWarnaDialog) {
+                    }
+                });
+                ambilWarnaDialog.show();
+            } else {
+                cbBgColor.setBackground(getDrawable(R.drawable.checkbox_formmated));
+                cbBgColor.setChecked(false);
+                Selected selected = new Selected("BgColorText", false);
+                updateViewModel.setMutableLiveData(selected);
+
+            }
+
+        });
+        cbColorText.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CheckBox checkBox = (CheckBox) view;
+
+                if (checkBox.isChecked()) {
+                    AmbilWarnaDialog ambilWarnaDialog = new AmbilWarnaDialog(UpdateActivity.this, colorText, true, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                        @Override
+                        public void onOk(AmbilWarnaDialog ambilWarnaDialog, int color) {
+
+                            String hexColor = String.format("#%06X", (0xFFFFFF & color));
+                            colorText = Color.parseColor(hexColor);
+                            colorTextAddNote = hexColor;
+                            Selected selected = new Selected(String.valueOf(hexColor), true);
+                            Log.d("sdfsaodf", String.valueOf(hexColor));
+
+                            updateViewModel.setMutableLiveData(selected);
+                            cbColorText.setBackground(getDrawable(R.drawable.checkbox_formmated));
+                            cbColorText.setChecked(true);
+                        }
+
+                        @Override
+                        public void onCancel(AmbilWarnaDialog ambilWarnaDialog) {
+                        }
+                    });
+                    ambilWarnaDialog.show();
+                } else {
+
+                    Selected selected = new Selected("Black", false);
+                    updateViewModel.setMutableLiveData(selected);
+
+                }
+            }
+        });
 
     }
+
 
     private void showDialogCategory(Context context) {
 
         TextView tvCancelCategory, tvOkCategory;
 
 
-        RecyclerView rcvCategory ;
+        RecyclerView rcvCategory;
 
         dataViewModel.getAllListCategory();
 
@@ -387,7 +693,7 @@ public class UpdateActivity extends AppCompatActivity {
         tvOkCategory.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                dataViewModel.updateCategoryNote(noteData,idCategory);
+                dataViewModel.updateCategoryNote(noteData, idCategory);
                 dialog.dismiss();
             }
         });
@@ -401,83 +707,84 @@ public class UpdateActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        // Inflate menu resource file.
         getMenuInflater().inflate(R.menu.menu_add, menu);
 
         getMenuInflater().inflate(R.menu.menu_save, menu);
 
-        getMenuInflater().inflate(R.menu.searchview, menu);
+        if (checkUpdate) {
+            // Inflate menu resource file.
+            getMenuInflater().inflate(R.menu.searchview, menu);
 
-        MenuItem menuItemSave = menu.findItem(R.id.nav_saveUpdate);
+            MenuItem menuItemSave = menu.findItem(R.id.nav_saveUpdate);
 
-        if (themeStyle.equals("Solarized")) {
-            // thay doi mau cho menu toolbar
-            SpannableString spannable = new SpannableString(menuItemSave.getTitle().toString()
+            if (themeStyle.equals("Solarized")) {
+                // thay doi mau cho menu toolbar
+                SpannableString spannable = new SpannableString(menuItemSave.getTitle().toString()
 
-            );
-            // Thay doi mau cua menu Sort
-            spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorTextSolari)), 0, spannable.length(), 0);
-            menuItemSave.setTitle(spannable);
+                );
+                // Thay doi mau cua menu Sort
+                spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorTextSolari)), 0, spannable.length(), 0);
+                menuItemSave.setTitle(spannable);
 
-            //   Thay đổi màu của OverflowIcon
-            if (overflowIcon != null) {
-                overflowIcon.setColorFilter(ContextCompat.getColor(UpdateActivity.this, R.color.colorTextSolari), PorterDuff.Mode.SRC_IN);
-                toolbar.setOverflowIcon(overflowIcon);
+                //   Thay đổi màu của OverflowIcon
+                if (overflowIcon != null) {
+                    overflowIcon.setColorFilter(ContextCompat.getColor(UpdateActivity.this, R.color.colorTextSolari), PorterDuff.Mode.SRC_IN);
+                    toolbar.setOverflowIcon(overflowIcon);
+                }
+
+                toolbar.setBackgroundColor(getResources().getColor(R.color.themeSolari));
+                toolbar.setTitleTextColor(getResources().getColor(R.color.colorTextSolari));
+
+            } else {
+                // thay doi mau cho menu toolbar
+                SpannableString spannable = new SpannableString(menuItemSave.getTitle().toString());
+                // Thay doi mau cua menu Sort
+                spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.white)), 0, spannable.length(), 0);
+                menuItemSave.setTitle(spannable);
+
+                toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+
+                if (overflowIcon != null) {
+                    overflowIcon.setColorFilter(ContextCompat.getColor(UpdateActivity.this, R.color.white), PorterDuff.Mode.SRC_IN);
+                    toolbar.setOverflowIcon(overflowIcon);
+                }
+
             }
 
+            MenuItem searchItem = menu.findItem(R.id.item_search);
 
+            SearchManager searchManager = (SearchManager) UpdateActivity.this.getSystemService(Context.SEARCH_SERVICE);
 
-            toolbar.setBackgroundColor(getResources().getColor(R.color.themeSolari));
-            toolbar.setTitleTextColor(getResources().getColor(R.color.colorTextSolari));
+            SearchView searchView = null;
 
-        }
-        else
-        {
-            // thay doi mau cho menu toolbar
-            SpannableString spannable = new SpannableString(menuItemSave.getTitle().toString());
-            // Thay doi mau cua menu Sort
-            spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.white)), 0, spannable.length(), 0);
-            menuItemSave.setTitle(spannable);
-
-            toolbar.setTitleTextColor(getResources().getColor(R.color.white));
-
-
-            if (overflowIcon != null) {
-                overflowIcon.setColorFilter(ContextCompat.getColor(UpdateActivity.this, R.color.white), PorterDuff.Mode.SRC_IN);
-                toolbar.setOverflowIcon(overflowIcon);
+            if (searchItem != null) {
+                searchView = (SearchView) searchItem.getActionView();
             }
-        }
-
-        MenuItem searchItem = menu.findItem(R.id.item_search);
-
-        SearchManager searchManager = (SearchManager) UpdateActivity.this.getSystemService(Context.SEARCH_SERVICE);
-
-        SearchView searchView = null;
-
-        if (searchItem != null) {
-            searchView = (SearchView) searchItem.getActionView();
-        }
-        if (searchView != null) {
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(UpdateActivity.this.getComponentName()));
-        }
-
-        searchView.setOnQueryTextListener(new OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
+            if (searchView != null) {
+                searchView.setSearchableInfo(searchManager.getSearchableInfo(UpdateActivity.this.getComponentName()));
             }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
+            searchView.setOnQueryTextListener(new OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return false;
+                }
 
-                highlightText(newText);
+                @Override
+                public boolean onQueryTextChange(String newText) {
 
-                return false;
-            }
-        });
+                    highlightText(newText);
+
+                    return false;
+                }
+            });
+
+
+        }
 
         return super.onCreateOptionsMenu(menu);
     }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
@@ -485,116 +792,40 @@ public class UpdateActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.nav_saveUpdate) {
-            eventClickUpdate();
+            if (checkUpdate) {
+                // update note
+
+                eventClickUpdate();
+            } else {
+
+                // add note
+
+                addNote();
+
+            }
         } else if (id == R.id.nav_colorize) {
+
             OpenColorPickerDialog(true);
+
         } else if (id == R.id.item_search) {
             Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show();
-        }else if(id == R.id.nav_category )
-        {
-           showDialogCategory(UpdateActivity.this);
+        } else if (id == R.id.nav_category) {
+            showDialogCategory(UpdateActivity.this);
         }
 
         return super.onOptionsItemSelected(item);
 
     }
 
-    private void checkBoxSelect() {
-        cbBold = findViewById(R.id.cbBold);
-        cbItalic = findViewById(R.id.cbItalic);
-        cbUnderline = findViewById(R.id.cbUnderline);
-        cbColorText = findViewById(R.id.cbColorText);
-        cbBold.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CheckBox checkBox = (CheckBox) view;
+    private void addNote() {
 
-                if (checkBox.isChecked()) {
-                    Log.d("fsdfasfasdfasdfas", checkBox.isChecked() + "");
-                    Selected selected = new Selected("1", true);
-                    updateViewModel.setMutableLiveData(selected);
-                } else {
-//                    Log.d("fsafas", isChecked + " ");
-                    Selected selected = new Selected("1", false);
-                    updateViewModel.setMutableLiveData(selected);
-                }
-
-            }
-        });
-        cbItalic.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CheckBox checkBox = (CheckBox) view;
-
-                if (checkBox.isChecked()) {
-                    Log.d("fsdfasfasdfasdfas", checkBox.isChecked() + "");
-                    Selected selected = new Selected("2", true);
-                    updateViewModel.setMutableLiveData(selected);
-                } else {
-//                    Log.d("fsafas", isChecked + " ");
-                    Selected selected = new Selected("2", false);
-                    updateViewModel.setMutableLiveData(selected);
-                }
-
-            }
-        });
-        cbUnderline.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CheckBox checkBox = (CheckBox) view;
-
-                if (checkBox.isChecked()) {
-                    Log.d("fsdfasfasdfasdfas", checkBox.isChecked() + "");
-                    Selected selected = new Selected("Under", true);
-                    updateViewModel.setMutableLiveData(selected);
-                } else {
-//                    Log.d("fsafas", isChecked + " ");
-                    Selected selected = new Selected("Under", false);
-                    updateViewModel.setMutableLiveData(selected);
-                }
-
-            }
-        });
-        cbColorText.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CheckBox checkBox = (CheckBox) view;
-
-                if (checkBox.isChecked()) {
-                    AmbilWarnaDialog ambilWarnaDialog = new AmbilWarnaDialog(UpdateActivity.this, colorText, true, new AmbilWarnaDialog.OnAmbilWarnaListener() {
-                        @Override
-                        public void onOk(AmbilWarnaDialog ambilWarnaDialog, int color) {
-                            colorText = color;
-                            String hexColor = String.format("#%06X", (0xFFFFFF & colorText));
-//                       Log.d("sdfsaodf", String.valueOf(colorText));
-                            colorText = Color.parseColor(hexColor);
-                            Selected selected = new Selected(String.valueOf(hexColor), true);
-                            updateViewModel.setMutableLiveData(selected);
-                        }
-
-                        @Override
-                        public void onCancel(AmbilWarnaDialog ambilWarnaDialog) {
-                        }
-                    });
-                    ambilWarnaDialog.show();
-                } else {
-
-                    Selected selected = new Selected("Black", false);
-                    updateViewModel.setMutableLiveData(selected);
-
-                }
-            }
-        });
-    }
-
-    private void eventClickUpdate() {
         if (edTitle.getText().toString().length() > 0 && edContent.getText().toString().length() > 0) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date date = new Date();
             String time = dateFormat.format(date);
 
             Note note = new Note();
-            note.setIdNote(noteData.getIdNote());
+
             note.setContent(edContent.getText().toString());
             note.setTitle(edTitle.getText().toString());
             note.setTimeEdit(time.toString());
@@ -605,6 +836,7 @@ public class UpdateActivity extends AppCompatActivity {
 
             String bgColor = String.format("#%06X", (0xFFFFFF & DefaultColor));
             note.setBgColors(String.valueOf(bgColor));
+
 
 
             if (cbBold.isChecked()) {
@@ -629,13 +861,21 @@ public class UpdateActivity extends AppCompatActivity {
                 note.setStyleItalic("false");
 
             }
-            note.setIdNoteStyle(noteData.getIdNoteStyle());
-            Log.d("checkNotess",note.getIdNoteStyle() + " ");
 
+            if(cbStrike.isChecked())
+            {
+                note.setStrike("true");
+            }else {
+                note.setStrike("false");
+
+            }
+
+
+            note.setBgColors(String.valueOf(DefaultColor));
 
             Intent intent = new Intent();
 
-            Log.d("corrrrr", note.getStyleTextColor());
+            Log.d("corrrrr",note.toString() + " ");
 
             intent.putExtra("note", note);
 
@@ -651,20 +891,81 @@ public class UpdateActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Vui lòng nhập dữ liệu ", Toast.LENGTH_SHORT).show();
         }
+
+
     }
 
-    private void highlightText(String s) {
-        SpannableString spannableString = new SpannableString(edContent.getText());
-        BackgroundColorSpan[] backgroundColorSpan = spannableString.getSpans(0, spannableString.length(), BackgroundColorSpan.class);
-        for (BackgroundColorSpan bgSpan : backgroundColorSpan) {
-            spannableString.removeSpan(bgSpan);
+    private void eventClickUpdate() {
+        if (edTitle.getText().toString().length() > 0 && edContent.getText().toString().length() > 0) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            Date date = new Date();
+            String time = dateFormat.format(date);
+
+            Note note = new Note();
+            note.setIdNote(noteData.getIdNote());
+            note.setContent(edContent.getText().toString());
+            note.setTitle(edTitle.getText().toString());
+            note.setTimeEdit(time.toString());
+
+            // set mau cho text color
+            String hexColor = String.format("#%06X", (0xFFFFFF & colorText));
+            note.setStyleTextColor(String.valueOf(hexColor));
+
+            String bgColor = String.format("#%06X", (0xFFFFFF & DefaultColor));
+
+            note.setBgColors(String.valueOf(bgColor));
+
+            if (cbBold.isChecked()) {
+                note.setStyleBold("true");
+            } else {
+                note.setStyleBold("false");
+            }
+
+            if (cbUnderline.isChecked()) {
+                note.setStyleUnderline("true");
+            } else {
+                note.setStyleUnderline("false");
+
+            }
+
+            if (cbItalic.isChecked()) {
+                Log.d("itaalcca", "sdfda");
+
+                note.setStyleItalic("true");
+            } else {
+                note.setStyleItalic("false");
+            }
+
+            if(cbStrike.isChecked())
+            {
+                note.setStrike("true");
+            }else {
+                note.setStrike("false");
+            }
+
+            note.setBackgroundColorText(String.valueOf(bgColorText));
+            note.setIdNoteStyle(noteData.getIdNoteStyle());
+            Log.d("checkNotess", note.getIdNoteStyle() + " ");
+
+
+            Intent intent = new Intent();
+
+            Log.d("corrrrr", note.toString());
+
+            intent.putExtra("note", note);
+
+//            databaseHandler.updateNote(note);
+
+            setResult(RESULT_OK, intent);
+
+//            Toast.makeText(this, "Cap nhat thanh cong !", Toast.LENGTH_SHORT).show();
+
+            finish();
+
+
+        } else {
+            Toast.makeText(this, "Vui lòng nhập dữ liệu ", Toast.LENGTH_SHORT).show();
         }
-        int indexOfKeyWord = spannableString.toString().indexOf(s);
-        while (indexOfKeyWord > 0) {
-            spannableString.setSpan(new BackgroundColorSpan(Color.YELLOW), indexOfKeyWord, indexOfKeyWord + s.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            indexOfKeyWord = spannableString.toString().indexOf(s, indexOfKeyWord + s.length());
-        }
-        edContent.setText(spannableString);
     }
 
     private void OpenColorPickerDialog(boolean AlphaSupport) {
@@ -678,9 +979,11 @@ public class UpdateActivity extends AppCompatActivity {
                 // chuyen doi ma mau  -15741650 thanh ma mau  0xFFFFFF
 
                 String hexColor = String.format("#%06X", (0xFFFFFF & DefaultColor));
-                Log.d("kemtraddulie", hexColor);
+
 
                 DefaultColor = Color.parseColor(String.valueOf(hexColor));
+
+                Log.d("kemtraddulie", String.valueOf(DefaultColor) + " ");
 
                 linearLayout.setBackgroundColor(Color.parseColor(String.valueOf(hexColor)));
 
@@ -696,5 +999,18 @@ public class UpdateActivity extends AppCompatActivity {
 
     }
 
+    private void highlightText(String s) {
+        SpannableString spannableString = new SpannableString(edContent.getText());
+        BackgroundColorSpan[] backgroundColorSpan = spannableString.getSpans(0, spannableString.length(), BackgroundColorSpan.class);
+        for (BackgroundColorSpan bgSpan : backgroundColorSpan) {
+            spannableString.removeSpan(bgSpan);
+        }
+        int indexOfKeyWord = spannableString.toString().indexOf(s);
+        while (indexOfKeyWord > 0) {
+            spannableString.setSpan(new BackgroundColorSpan(Color.YELLOW), indexOfKeyWord, indexOfKeyWord + s.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            indexOfKeyWord = spannableString.toString().indexOf(s, indexOfKeyWord + s.length());
+        }
+        edContent.setText(spannableString);
+    }
 
 }

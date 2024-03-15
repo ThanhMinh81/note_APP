@@ -129,7 +129,7 @@ public class DataViewModel extends ViewModel {
         this.listMutableLiveData.setValue(noteArrayList);
         this.listMutableLiveData.setValue(notes);
 
-        databaseHandler.updateNote(note);
+//        databaseHandler.updateNote(note);
 
     }
 
